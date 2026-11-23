@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CJ Tech — Sistem Reservasi Hotel</title>
+  <style>
+    :root {
+      --bg-cream: #fdf6f2;
+      --surface: #ffffff;
+      --brown-dark: #3b1c14;
+      --brown-mid: #633224;
+      --brown-soft: #8d5342;
+      --red-primary: #a61c1c;
+      --red-hover: #821212;
+      --red-soft: #fdecec;
+      --border: #e6cfc7;
+      --text-main: #2a140e;
+      --text-muted: #6e5046;
+      --paid-bg: #e7f6ec;
+      --paid-text: #186332;
+      --pending-bg: #fff4e0;
+      --pending-text: #8f5400;
+      --unpaid-bg: #fde8e8;
+      --unpaid-text: #9b1c1c;
+      --radius: 12px;
+      --shadow: 0 6px 20px rgba(59, 28, 20, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    /* Header & Logo CJ Tech */
+    header {
+      background: linear-gradient(135deg, var(--brown-dark) 0%, var(--red-primary) 100%);
+      color: #fff;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 4px 14px rgba(59, 28, 20, 0.22);
+    }
+
+    .header-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .brand-sub {
+      font-size: 0.78rem;
+      color: #f7d9d2;
+    }
+
+    .mode-switch {
+      display: flex;
+      background: rgba(255, 255, 255, 0.14);
+      padding: 4px;
+      border-radius: 999px;
+      gap: 4px;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      color: #fff;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .mode-btn.active {
+      background: #fff;
+      color: var(--red-primary);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1140px;
+      margin: 22px auto 48px;
+      padding: 0 16px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--red-primary);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card:nth-child(2) {
+      border-left-color: var(--brown-mid);
+    }
+
+    .stat-card:nth-child(3) {
+      border-left-color: #b83b14;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--brown-dark);
+      margin-top: 2px;
+    }
+
+    /* Cards & Admin CRUD */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--brown-dark);
+    }
+
+    .admin-badge {
+      background: var(--red-soft);
+      color: var(--red-primary);
+      border: 1px solid #f3bcbc;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .crud-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--brown-mid);
+    }
+
+    input, select {
+      padding: 9px 11px;
+      border: 1px solid #d5b4a9;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      background: #fffdfb;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--red-primary);
+      box-shadow: 0 0 0 3px rgba(166, 28, 28, 0.14);
+    }
+
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--red-primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--red-hover);
+    }
+
+    .btn-secondary {
+      background: #efe2dc;
+      color: var(--brown-dark);
+    }
+
+    .btn-secondary:hover {
+      background: #e2cfc6;
+    }
+
+    .btn-edit {
+      background: var(--brown-mid);
+      color: #fff;
+      padding: 6px 11px;
+      font-size: 0.78rem;
+    }
+
+    .btn-edit:hover {
+      background: var(--brown-dark);
+    }
+
+    /* Filter & Search Bar */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .toolbar input, .toolbar select {
+      flex: 1 1 200px;
+    }
+
+    /* Table (Desktop) */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th {
+      background: var(--brown-dark);
+      color: #fff;
+      text-align: left;
+      padding: 11px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #f0ded8;
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: #fdf3f0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .badge-Lunas {
+      background: var(--paid-bg);
+      color: var(--paid-text);
+    }
+
+    .badge-DP {
+      background: var(--pending-bg);
+      color: var(--pending-text);
+    }
+
+    .badge-Belum\ Bayar {
+      background: var(--unpaid-bg);
+      color: var(--unpaid-text);
+    }
+
+    /* Mobile Cards View */
+    .mobile-list {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .res-mobile-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+      background: #fffdfb;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .res-mobile-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .res-mobile-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .res-mobile-meta strong {
+      color: var(--brown-dark);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 18px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: #fff;
+    }
+
+    /* Responsive Breakpoint */
+    @media (max-width: 720px) {
+      .table-wrap {
+        display: none;
+      }
+
+      .mobile-list {
+        display: flex;
+      }
+
+      header {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <!-- Logo SVG CJ Tech -->
+        <svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Logo CJ Tech">
+          <rect width="48" height="48" rx="11" fill="#2A110B" stroke="#F3B4A6" stroke-width="1.5"/>
+          <path d="M21 15C16.58 15 13 18.58 13 23C13 27.42 16.58 31 21 31C23.1 31 25.02 30.19 26.46 28.86" stroke="#FF6B57" stroke-width="3.2" stroke-linecap="round"/>
+          <path d="M31 15V26.5C31 29.26 28.76 31.5 26 31.5H24.5" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
+          <circle cx="35" cy="14" r="3" fill="#FF9E44"/>
+        </svg>
+        <div>
+          <div class="brand-title">Grand Nusantara Hotel</div>
+          <div class="brand-sub">Powered by <strong>CJ Tech</strong> — Software Development</div>
+        </div>
+      </div>
+
+      <div class="mode-switch" role="tablist" aria-label="Mode Tampilan">
+        <button class="mode-btn active" id="tabGuest" type="button">Reservasi & Histori</button>
+        <button class="mode-btn" id="tabAdmin" type="button">Panel Admin (CRUD)</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Ringkasan Statistik -->
+    <section class="stats-grid" aria-label="Ringkasan Reservasi">
+      <div class="stat-card">
+        <div class="stat-label">Total Reservasi</div>
+        <div class="stat-value" id="statTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Malam Menginap</div>
+        <div class="stat-value" id="statNights">0 Malam</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pembayaran Lunas</div>
+        <div class="stat-value" id="statPaid">0</div>
+      </div>
+    </section>
+
+    <!-- Form CRUD Admin (Create & Update saja, tanpa Delete) -->
+    <section class="card hidden" id="adminSection" aria-label="Form Admin CRUD">
+      <div class="card-header">
+        <h2 class="card-title" id="formHeading">Tambah Reservasi Baru (Create)</h2>
+        <span class="admin-badge">ADMIN • CREATE & UPDATE ONLY</span>
+      </div>
+
+      <form class="crud-form" id="reservationForm">
+        <input type="hidden" id="editId" />
+
+        <div class="field">
+          <label for="guestName">Nama Tamu</label>
+          <input type="text" id="guestName" placeholder="Contoh: Rina Wijaya" required />
+        </div>
+
+        <div class="field">
+          <label for="roomType">Tipe & Nomor Kamar</label>
+          <select id="roomType" required>
+            <option value="Deluxe King — 201">Deluxe King — 201 (Rp750.000/mlm)</option>
+            <option value="Superior Twin — 105">Superior Twin — 105 (Rp550.000/mlm)</option>
+            <option value="Executive Suite — 402">Executive Suite — 402 (Rp1.350.000/mlm)</option>
+            <option value="Family Room — 308">Family Room — 308 (Rp980.000/mlm)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="checkIn">Tanggal Check-In</label>
+          <input type="date" id="checkIn" required />
+        </div>
+
+        <div class="field">
+          <label for="checkOut">Tanggal Check-Out</label>
+          <input type="date" id="checkOut" required />
+        </div>
+
+        <div class="field">
+          <label for="paymentStatus">Status Pembayaran</label>
+          <select id="paymentStatus" required>
+            <option value="Lunas">Lunas</option>
+            <option value="DP">DP</option>
+            <option value="Belum Bayar">Belum Bayar</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="stayStatus">Status Histori Menginap</label>
+          <select id="stayStatus" required>
+            <option value="Aktif Menginap">Aktif Menginap</option>
+            <option value="Akan Datang">Akan Datang</option>
+            <option value="Selesai (Check-Out)">Selesai (Check-Out)</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn">Simpan Reservasi</button>
+          <button type="button" class="btn btn-secondary hidden" id="cancelEditBtn">Batal Edit</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Daftar Reservasi & Histori -->
+    <section class="card" aria-label="Daftar Reservasi dan Histori">
+      <div class="card-header">
+        <h2 class="card-title">Daftar Reservasi & Histori Menginap</h2>
+        <span class="badge badge-Lunas" id="modeIndicator">Mode Tamu / Resepsionis</span>
+      </div>
+
+      <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="Cari nama tamu atau kamar..." />
+        <select id="filterPayment">
+          <option value="ALL">Semua Status Pembayaran</option>
+          <option value="Lunas">Lunas</option>
+          <option value="DP">DP</option>
+          <option value="Belum Bayar">Belum Bayar</option>
+        </select>
+        <select id="filterStay">
+          <option value="ALL">Semua Histori</option>
+          <option value="Aktif Menginap">Aktif Menginap</option>
+          <option value="Akan Datang">Akan Datang</option>
+          <option value="Selesai (Check-Out)">Selesai (Check-Out)</option>
+        </select>
+      </div>
+
+      <!-- Tabel Desktop -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama Tamu</th>
+              <th>Kamar</th>
+              <th>Check-In / Out</th>
+              <th>Durasi</th>
+              <th>Pembayaran</th>
+              <th>Histori</th>
+              <th class="admin-col hidden">Aksi Admin</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Kartu Mobile -->
+      <div class="mobile-list" id="mobileList"></div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>CJ Tech</strong> — Software Development • Sistem Manajemen Reservasi Hotel Responsif
+  </footer>
+
+  <script>
+    const STORAGE_KEY = "cjtech_hotel_reservations_v1";
+
+    const roomRates = {
+      "Deluxe King — 201": 750000,
+      "Superior Twin — 105": 550000,
+      "Executive Suite — 402": 1350000,
+      "Family Room — 308": 980000
+    };
+
+    const initialData = [
+      {
+        id: "RSV-101",
+        guestName: "Budi Santoso",
+        roomType: "Deluxe King — 201",
+        checkIn: "2026-11-22",
+        checkOut: "2026-11-25",
+        paymentStatus: "Lunas",
+        stayStatus: "Aktif Menginap"
+      },
+      {
+        id: "RSV-102",
+        guestName: "Siti Rahmawati",
+        roomType: "Executive Suite — 402",
+        checkIn: "2026-11-26",
+        checkOut: "2026-11-28",
+        paymentStatus: "DP",
+        stayStatus: "Akan Datang"
+      },
+      {
+        id: "RSV-103",
+        guestName: "Andi Pratama",
+        roomType: "Superior Twin — 105",
+        checkIn: "2026-11-10",
+        checkOut: "2026-11-12",
+        paymentStatus: "Lunas",
+        stayStatus: "Selesai (Check-Out)"
+      },
+      {
+        id: "RSV-104",
+        guestName: "Maya Kusuma",
+        roomType: "Family Room — 308",
+        checkIn: "2026-11-29",
+        checkOut: "2026-12-02",
+        paymentStatus: "Belum Bayar",
+        stayStatus: "Akan Datang"
+      }
+    ];
+
+    let reservations = loadReservations();
+    let isAdminMode = false;
+
+    function loadReservations() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initialData));
+        return [...initialData];
+      }
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return [...initialData];
+      }
+    }
+
+    function saveReservations() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reservations));
+    }
+
+    function calculateNights(checkIn, checkOut) {
+      const start = new Date(checkIn + "T00:00:00");
+      const end = new Date(checkOut + "T00:00:00");
+      const diffMs = end - start;
+      const days = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      return days > 0 ? days : 1;
+    }
+
+    function formatRupiah(amount) {
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+
+    function getFilteredData() {
+      const q = document.getElementById("searchInput").value.trim().toLowerCase();
+      const payFilter = document.getElementById("filterPayment").value;
+      const stayFilter = document.getElementById("filterStay").value;
+
+      return reservations.filter((item) => {
+        const matchText =
+          item.guestName.toLowerCase().includes(q) ||
+          item.roomType.toLowerCase().includes(q) ||
+          item.id.toLowerCase().includes(q);
+        const matchPay = payFilter === "ALL" || item.paymentStatus === payFilter;
+        const matchStay = stayFilter === "ALL" || item.stayStatus === stayFilter;
+        return matchText && matchPay && matchStay;
+      });
+    }
+
+    function renderStats() {
+      document.getElementById("statTotal").textContent = reservations.length;
+      const totalNights = reservations.reduce(
+        (sum, r) => sum + calculateNights(r.checkIn, r.checkOut),
+        0
+      );
+      document.getElementById("statNights").textContent = `${totalNights} Malam`;
+      const paidCount = reservations.filter((r) => r.paymentStatus === "Lunas").length;
+      document.getElementById("statPaid").textContent = paidCount;
+    }
+
+    function renderList() {
+      const data = getFilteredData();
+      const tbody = document.getElementById("tableBody");
+      const mobileList = document.getElementById("mobileList");
+
+      document.querySelectorAll(".admin-col").forEach((el) => {
+        el.classList.toggle("hidden", !isAdminMode);
+      });
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${isAdminMode ? 8 : 7}" style="text-align:center; padding:24px;">Tidak ada data reservasi yang cocok.</td></tr>`;
+        mobileList.innerHTML = `<div class="res-mobile-card" style="text-align:center;">Tidak ada data reservasi yang cocok.</div>`;
+        return;
+      }
+
+      tbody.innerHTML = data
+        .map((item) => {
+          const nights = calculateNights(item.checkIn, item.checkOut);
+          const totalCost = (roomRates[item.roomType] || 650000) * nights;
+          const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
+
+          return `
+            <tr>
+              <td><strong>${item.id}</strong></td>
+              <td>${item.guestName}</td>
+              <td>${item.roomType}</td>
+              <td>${item.checkIn} → ${item.checkOut}</td>
+              <td><strong>${nights} Malam</strong><br><small style="color:#6e5046;">${formatRupiah(totalCost)}</small></td>
+              <td><span class="badge ${badgeClass}">${item.paymentStatus}</span></td>
+              <td>${item.stayStatus}</td>
+              <td class="admin-col ${isAdminMode ? "" : "hidden"}">
+                <button type="button" class="btn btn-edit" onclick="startEdit('${item.id}')">Edit</button>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      mobileList.innerHTML = data
+        .map((item) => {
+          const nights = calculateNights(item.checkIn, item.checkOut);
+          const totalCost = (roomRates[item.roomType] || 650000) * nights;
+          const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
+
+          return `
+            <div class="res-mobile-card">
+              <div class="res-mobile-top">
+                <div>
+                  <small style="color:#8d5342; font-weight:700;">${item.id}</small>
+                  <div style="font-weight:700; color:#3b1c14;">${item.guestName}</div>
+                  <div style="font-size:0.84rem;">${item.roomType}</div>
+                </div>
+                <span class="badge ${badgeClass}">${item.paymentStatus}</span>
+              </div>
+              <div class="res-mobile-meta">
+                <div><strong>Durasi:</strong> ${nights} Malam</div>
+                <div><strong>Histori:</strong> ${item.stayStatus}</div>
+                <div><strong>Check-In:</strong> ${item.checkIn}</div>
+                <div><strong>Check-Out:</strong> ${item.checkOut}</div>
+                <div style="grid-column: 1 / -1;"><strong>Estimasi:</strong> ${formatRupiah(totalCost)}</div>
+              </div>
+              ${
+                isAdminMode
+                  ? `<div style="margin-top:4px;"><button type="button" class="btn btn-edit" onclick="startEdit('${item.id}')">Edit Data</button></div>`
+                  : ""
+              }
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function setMode(admin) {
+      isAdminMode = admin;
+      document.getElementById("tabGuest").classList.toggle("active", !admin);
+      document.getElementById("tabAdmin").classList.toggle("active", admin);
+      document.getElementById("adminSection").classList.toggle("hidden", !admin);
+      document.getElementById("modeIndicator").textContent = admin
+        ? "Mode Admin (Create & Update)"
+        : "Mode Tamu / Resepsionis";
+      if (!admin) resetForm();
+      renderList();
+    }
+
+    function resetForm() {
+      document.getElementById("editId").value = "";
+      document.getElementById("reservationForm").reset();
+      document.getElementById("formHeading").textContent = "Tambah Reservasi Baru (Create)";
+      document.getElementById("submitBtn").textContent = "Simpan Reservasi";
+      document.getElementById("cancelEditBtn").classList.add("hidden");
+    }
+
+    window.startEdit = function (id) {
+      const target = reservations.find((r) => r.id === id);
+      if (!target) return;
+
+      setMode(true);
+      document.getElementById("editId").value = target.id;
+      document.getElementById("guestName").value = target.guestName;
+      document.getElementById("roomType").value = target.roomType;
+      document.getElementById("checkIn").value = target.checkIn;
+      document.getElementById("checkOut").value = target.checkOut;
+      document.getElementById("paymentStatus").value = target.paymentStatus;
+      document.getElementById("stayStatus").value = target.stayStatus;
+
+      document.getElementById("formHeading").textContent = `Edit Reservasi ${target.id} (Update)`;
+      document.getElementById("submitBtn").textContent = "Perbarui Data";
+      document.getElementById("cancelEditBtn").classList.remove("hidden");
+      document.getElementById("adminSection").scrollIntoView({ behavior: "smooth" });
+    };
+
+    document.getElementById("reservationForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const editId = document.getElementById("editId").value;
+      const guestName = document.getElementById("guestName").value.trim();
+      const roomType = document.getElementById("roomType").value;
+      const checkIn = document.getElementById("checkIn").value;
+      const checkOut = document.getElementById("checkOut").value;
+      const paymentStatus = document.getElementById("paymentStatus").value;
+      const stayStatus = document.getElementById("stayStatus").value;
+
+      if (checkOut <= checkIn) {
+        alert("Tanggal Check-Out harus setelah tanggal Check-In.");
+        return;
+      }
+
+      if (editId) {
+        reservations = reservations.map((item) =>
+          item.id === editId
+            ? { ...item, guestName, roomType, checkIn, checkOut, paymentStatus, stayStatus }
+            : item
+        );
+      } else {
+        const nextNum = 101 + reservations.length;
+        reservations.unshift({
+          id: `RSV-${nextNum}`,
+          guestName,
+          roomType,
+          checkIn,
+          checkOut,
+          paymentStatus,
+          stayStatus
+        });
+      }
+
+      saveReservations();
+      renderStats();
+      renderList();
+      resetForm();
+    });
+
+    document.getElementById("cancelEditBtn").addEventListener("click", resetForm);
+    document.getElementById("tabGuest").addEventListener("click", () => setMode(false));
+    document.getElementById("tabAdmin").addEventListener("click", () => setMode(true));
+    document.getElementById("searchInput").addEventListener("input", renderList);
+    document.getElementById("filterPayment").addEventListener("change", renderList);
+    document.getElementById("filterStay").addEventListener("change", renderList);
+
+    renderStats();
+    renderList();
+  </script>
+</body>
+</html>
