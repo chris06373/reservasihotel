@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CJ Tech — Halaman Tampilan Reservasi Hotel</title>
+  <title>CJ Tech — Front-End Reservasi Hotel</title>
   <style>
     :root {
       --bg-cream: #fdf6f2;
@@ -27,21 +27,16 @@
       --shadow: 0 6px 20px rgba(59, 28, 20, 0.08);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: "Segoe UI", Roboto, Arial, sans-serif;
       background-color: var(--bg-cream);
       color: var(--text-main);
       line-height: 1.5;
-      padding-bottom: 76px; /* Ruang aman bottom bar mobile */
+      padding-bottom: 80px;
     }
 
-    /* Header */
     header {
       background: linear-gradient(135deg, var(--brown-dark) 0%, var(--red-primary) 100%);
       color: #fff;
@@ -62,48 +57,24 @@
       gap: 12px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-title { font-size: 1.08rem; font-weight: 700; }
+    .brand-sub { font-size: 0.75rem; color: #f7d9d2; }
 
-    .brand-title {
-      font-size: 1.08rem;
-      font-weight: 700;
-    }
-
-    .brand-sub {
-      font-size: 0.75rem;
-      color: #f7d9d2;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
+    .nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
     .nav-pill {
       text-decoration: none;
       color: #fff;
       background: rgba(255, 255, 255, 0.14);
-      padding: 8px 13px;
+      padding: 8px 14px;
       border-radius: 999px;
       font-size: 0.82rem;
       font-weight: 600;
       min-height: 38px;
       display: inline-flex;
       align-items: center;
-      transition: 0.2s;
     }
-
-    .nav-pill.active,
-    .nav-pill:hover {
-      background: #fff;
-      color: var(--red-primary);
-    }
+    .nav-pill.active, .nav-pill:hover { background: #fff; color: var(--red-primary); }
 
     main {
       max-width: 1180px;
@@ -113,7 +84,6 @@
       gap: 18px;
     }
 
-    /* Hero Banner Mobile & Tablet Friendly */
     .hero-card {
       background: linear-gradient(120deg, #fffdfb 0%, #fceee9 100%);
       border: 1px solid var(--border);
@@ -137,25 +107,9 @@
       margin-bottom: 8px;
     }
 
-    .hero-title {
-      font-size: 1.3rem;
-      color: var(--brown-dark);
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .hero-desc {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .hero-highlights {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
+    .hero-title { font-size: 1.3rem; color: var(--brown-dark); font-weight: 800; margin-bottom: 6px; }
+    .hero-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px; }
+    .hero-highlights { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip {
       background: #fff;
       border: 1px solid var(--border);
@@ -166,13 +120,7 @@
       border-radius: 8px;
     }
 
-    /* Stats */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -181,25 +129,11 @@
       padding: 14px;
       box-shadow: var(--shadow);
     }
-
     .stat-card:nth-child(2) { border-left-color: var(--brown-mid); }
     .stat-card:nth-child(3) { border-left-color: #b83b14; }
+    .stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+    .stat-value { font-size: 1.3rem; font-weight: 800; color: var(--brown-dark); margin-top: 2px; }
 
-    .stat-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-
-    .stat-value {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--brown-dark);
-      margin-top: 2px;
-    }
-
-    /* Section Card */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -219,19 +153,9 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .card-title {
-      font-size: 1.02rem;
-      font-weight: 700;
-      color: var(--brown-dark);
-    }
+    .card-title { font-size: 1.02rem; font-weight: 700; color: var(--brown-dark); }
 
-    /* Katalog Kamar Visual */
-    .room-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
+    .room-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .room-card {
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -243,29 +167,10 @@
       gap: 10px;
     }
 
-    .room-code {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--red-primary);
-      text-transform: uppercase;
-    }
-
-    .room-name {
-      font-size: 0.98rem;
-      font-weight: 700;
-      color: var(--brown-dark);
-    }
-
-    .room-spec {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .room-price {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--brown-mid);
-    }
+    .room-code { font-size: 0.72rem; font-weight: 700; color: var(--red-primary); text-transform: uppercase; }
+    .room-name { font-size: 0.98rem; font-weight: 700; color: var(--brown-dark); }
+    .room-spec { font-size: 0.8rem; color: var(--text-muted); }
+    .room-price { font-size: 0.95rem; font-weight: 800; color: var(--brown-mid); }
 
     .btn {
       border: none;
@@ -283,37 +188,13 @@
       transition: 0.2s;
     }
 
-    .btn-primary {
-      background: var(--red-primary);
-      color: #fff;
-    }
-
+    .btn-primary { background: var(--red-primary); color: #fff; }
     .btn-primary:hover { background: var(--red-hover); }
+    .btn-secondary { background: #efe2dc; color: var(--brown-dark); }
+    .btn-outline-red { background: #fff; color: var(--red-primary); border: 1px solid var(--red-primary); }
+    .btn-sm { padding: 7px 11px; min-height: 36px; font-size: 0.78rem; }
 
-    .btn-secondary {
-      background: #efe2dc;
-      color: var(--brown-dark);
-    }
-
-    .btn-outline-red {
-      background: #fff;
-      color: var(--red-primary);
-      border: 1px solid var(--red-primary);
-    }
-
-    .btn-sm {
-      padding: 7px 11px;
-      min-height: 36px;
-      font-size: 0.78rem;
-    }
-
-    /* Daftar Reservasi: Grid Kartu Responsif (Tablet & Mobile) */
-    .history-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
+    .history-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .res-card {
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -324,13 +205,7 @@
       gap: 8px;
     }
 
-    .res-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-    }
-
+    .res-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
     .res-meta {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -338,7 +213,6 @@
       font-size: 0.82rem;
       color: var(--text-muted);
     }
-
     .res-meta strong { color: var(--brown-dark); }
 
     .badge {
@@ -354,7 +228,6 @@
     .badge-DP { background: var(--pending-bg); color: var(--pending-text); }
     .badge-Belum { background: var(--unpaid-bg); color: var(--unpaid-text); }
 
-    /* Modal Invoice */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -378,7 +251,6 @@
 
     .hidden { display: none !important; }
 
-    /* Mobile Bottom Bar */
     .mobile-bottom-nav {
       display: none;
       position: fixed;
@@ -392,35 +264,16 @@
       gap: 8px;
     }
 
-    /* Breakpoint Tablet (<= 1024px) */
     @media (max-width: 1024px) {
-      .room-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .hero-card {
-        grid-template-columns: 1fr;
-      }
+      .room-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero-card { grid-template-columns: 1fr; }
     }
 
-    /* Breakpoint Mobile (<= 720px) */
     @media (max-width: 720px) {
-      body {
-        padding-bottom: 84px;
-      }
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-      .room-grid,
-      .history-grid {
-        grid-template-columns: 1fr;
-      }
-      .header-inner .nav-links {
-        display: none;
-      }
-      .mobile-bottom-nav {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-      }
+      body { padding-bottom: 84px; }
+      .stats-grid, .room-grid, .history-grid { grid-template-columns: 1fr; }
+      .header-inner .nav-links { display: none; }
+      .mobile-bottom-nav { display: grid; grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -436,39 +289,37 @@
         </svg>
         <div>
           <div class="brand-title">Grand Nusantara Hotel</div>
-          <div class="brand-sub">Halaman Tampilan • <strong>CJ Tech</strong></div>
+          <div class="brand-sub">Front-End (<code>index.html</code>) • <strong>CJ Tech</strong></div>
         </div>
       </div>
 
-      <nav class="nav-links" aria-label="Navigasi Halaman">
-        <a href="tampilan.html" class="nav-pill active">1. Halaman Tampilan</a>
-        <a href="fungsi.html" class="nav-pill">2. Halaman Fungsi (CRUD & Ekspor)</a>
+      <nav class="nav-links" aria-label="Navigasi Front-End dan Back-End">
+        <a href="index.html" class="nav-pill active">Front-End (index.html)</a>
+        <a href="fungsi.html" class="nav-pill">Back-End (fungsi.html)</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <!-- Banner Tampilan -->
     <section class="hero-card">
       <div>
-        <span class="hero-tag">HALAMAN TAMPILAN (UI & KATALOG)</span>
-        <h1 class="hero-title">Etalase Kamar & Ringkasan Menginap</h1>
+        <span class="hero-tag">FRONT-END PRESENTATION LAYER</span>
+        <h1 class="hero-title">Tampilan Kamar & Ringkasan Menginap</h1>
         <p class="hero-desc">
-          Dirancang agar nyaman dilihat di layar ponsel dan tablet. Untuk input data, edit reservasi, filter, paginasi, serta ekspor Excel/PDF, buka <strong>Halaman Fungsi</strong>.
+          Halaman ini khusus menyajikan antarmuka responsif untuk mobile dan tablet. Seluruh pemrosesan data, validasi bentrok jadwal, CRUD, dan ekspor dijalankan oleh <strong>fungsi.html</strong>.
         </p>
         <div class="hero-highlights">
           <span class="chip">Mobile & Tablet Ready</span>
-          <span class="chip">Katalog 4 Tipe Kamar</span>
+          <span class="chip">Katalog Kamar</span>
           <span class="chip">Pratinjau Invoice</span>
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <a href="fungsi.html" class="btn btn-primary">Buka Halaman Fungsi →</a>
-        <button type="button" class="btn btn-secondary" id="seedSampleBtn">Isi Contoh Data Uji</button>
+        <a href="fungsi.html" class="btn btn-primary">Buka Back-End (fungsi.html) →</a>
+        <button type="button" class="btn btn-secondary" id="seedSampleBtn">Seed Data ke Back-End</button>
       </div>
     </section>
 
-    <!-- Statistik -->
     <section class="stats-grid" aria-label="Statistik">
       <div class="stat-card">
         <div class="stat-label">Total Reservasi</div>
@@ -484,26 +335,23 @@
       </div>
     </section>
 
-    <!-- Katalog Kamar -->
     <section class="card" aria-label="Katalog Kamar">
       <div class="card-header">
         <h2 class="card-title">Pilihan Kamar Tersedia</h2>
-        <span style="font-size:0.8rem; color:var(--text-muted);">Ketuk pesan untuk lanjut ke Halaman Fungsi</span>
+        <span style="font-size:0.8rem; color:var(--text-muted);">Pilih kamar untuk lanjut ke <code>fungsi.html</code></span>
       </div>
       <div class="room-grid" id="roomCatalog"></div>
     </section>
 
-    <!-- Cuplikan Histori -->
     <section class="card" aria-label="Ringkasan Histori">
       <div class="card-header">
         <h2 class="card-title">Ringkasan Reservasi Terbaru</h2>
-        <a href="fungsi.html" class="btn btn-outline-red btn-sm">Kelola Lengkap di Halaman Fungsi</a>
+        <a href="fungsi.html" class="btn btn-outline-red btn-sm">Kelola di Back-End</a>
       </div>
       <div class="history-grid" id="uiHistoryList"></div>
     </section>
   </main>
 
-  <!-- Modal Invoice -->
   <div class="modal-backdrop hidden" id="uiInvoiceModal" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border);">
@@ -514,14 +362,14 @@
     </div>
   </div>
 
-  <!-- Bottom Nav Mobile -->
   <div class="mobile-bottom-nav">
-    <a href="tampilan.html" class="btn btn-primary btn-sm">Tampilan</a>
-    <a href="fungsi.html" class="btn btn-secondary btn-sm">Halaman Fungsi</a>
+    <a href="index.html" class="btn btn-primary btn-sm">Front-End</a>
+    <a href="fungsi.html" class="btn btn-secondary btn-sm">Back-End</a>
   </div>
 
   <script>
     const STORAGE_KEY = "cjtech_hotel_reservations_v2";
+    const CHANNEL_NAME = "cjtech_hotel_sync_channel";
     const ROOMS = [
       { code: "KM-201", name: "Deluxe King — 201", spec: "King Bed • AC • Sarapan 2 Tamu", price: 750000 },
       { code: "KM-105", name: "Superior Twin — 105", spec: "Twin Bed • Wi-Fi Cepat • Balkon", price: 550000 },
@@ -532,7 +380,7 @@
     const rupiah = (n) =>
       new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
 
-    const getData = () => {
+    const readStore = () => {
       try {
         const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
         return Array.isArray(raw) ? raw : [];
@@ -558,7 +406,7 @@
             <div>
               <div class="room-price" style="margin-bottom:8px;">${rupiah(r.price)} / malam</div>
               <a href="fungsi.html?room=${encodeURIComponent(r.name)}" class="btn btn-primary btn-sm" style="width:100%;">
-                Pesan di Halaman Fungsi
+                Pesan via Back-End
               </a>
             </div>
           </div>
@@ -566,8 +414,8 @@
       ).join("");
     }
 
-    function renderUiSummary() {
-      const list = getData();
+    function renderFrontEndSummary() {
+      const list = readStore();
       document.getElementById("uiStatTotal").textContent = list.length;
       document.getElementById("uiStatNights").textContent =
         `${list.reduce((s, x) => s + calcNights(x.checkIn, x.checkOut), 0)} Malam`;
@@ -575,7 +423,7 @@
 
       const wrap = document.getElementById("uiHistoryList");
       if (!list.length) {
-        wrap.innerHTML = `<div class="res-card" style="grid-column:1/-1; color:var(--text-muted);">Belum ada data. Klik <strong>Isi Contoh Data Uji</strong> atau buka <strong>Halaman Fungsi</strong>.</div>`;
+        wrap.innerHTML = `<div class="res-card" style="grid-column:1/-1; color:var(--text-muted);">Belum ada data. Klik <strong>Seed Data ke Back-End</strong> atau buka <strong>fungsi.html</strong>.</div>`;
         return;
       }
 
@@ -609,7 +457,7 @@
     }
 
     window.previewInv = (id) => {
-      const item = getData().find((r) => r.id === id);
+      const item = readStore().find((r) => r.id === id);
       if (!item) return;
       const nights = calcNights(item.checkIn, item.checkOut);
       const room = ROOMS.find((r) => r.name === item.roomType);
@@ -638,11 +486,22 @@
         { id: "RSV-1002", guestName: "Budi Santoso", roomType: "Executive Suite — 402", checkIn: "2026-11-29", checkOut: "2026-12-01", paymentStatus: "DP", stayStatus: "Akan Datang" }
       ];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sample));
-      renderUiSummary();
+      if ("BroadcastChannel" in window) {
+        new BroadcastChannel(CHANNEL_NAME).postMessage({ type: "DATA_UPDATED" });
+      }
+      renderFrontEndSummary();
     });
 
+    window.addEventListener("storage", (e) => {
+      if (e.key === STORAGE_KEY) renderFrontEndSummary();
+    });
+
+    if ("BroadcastChannel" in window) {
+      new BroadcastChannel(CHANNEL_NAME).addEventListener("message", renderFrontEndSummary);
+    }
+
     renderRooms();
-    renderUiSummary();
+    renderFrontEndSummary();
   </script>
 </body>
 </html>
