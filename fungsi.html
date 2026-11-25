@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CJ Tech — Halaman Fungsi Reservasi Hotel</title>
+  <title>CJ Tech — Back-End Engine Reservasi Hotel</title>
   <style>
     :root {
       --bg-cream: #fdf6f2;
@@ -34,7 +34,7 @@
       background-color: var(--bg-cream);
       color: var(--text-main);
       line-height: 1.5;
-      padding-bottom: 76px;
+      padding-bottom: 80px;
     }
 
     header {
@@ -62,12 +62,11 @@
     .brand-sub { font-size: 0.75rem; color: #f7d9d2; }
 
     .nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
-
     .nav-pill {
       text-decoration: none;
       color: #fff;
       background: rgba(255, 255, 255, 0.14);
-      padding: 8px 13px;
+      padding: 8px 14px;
       border-radius: 999px;
       font-size: 0.82rem;
       font-weight: 600;
@@ -75,11 +74,7 @@
       display: inline-flex;
       align-items: center;
     }
-
-    .nav-pill.active, .nav-pill:hover {
-      background: #fff;
-      color: var(--red-primary);
-    }
+    .nav-pill.active, .nav-pill:hover { background: #fff; color: var(--red-primary); }
 
     main {
       max-width: 1180px;
@@ -89,12 +84,7 @@
       gap: 18px;
     }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -103,7 +93,6 @@
       padding: 14px;
       box-shadow: var(--shadow);
     }
-
     .stat-card:nth-child(2) { border-left-color: var(--brown-mid); }
     .stat-card:nth-child(3) { border-left-color: #b83b14; }
     .stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
@@ -130,12 +119,16 @@
 
     .card-title { font-size: 1.02rem; font-weight: 700; color: var(--brown-dark); }
 
-    .crud-form {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+    .api-status {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--paid-bg);
+      color: var(--paid-text);
     }
 
+    .crud-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .field { display: flex; flex-direction: column; gap: 5px; }
     label { font-size: 0.82rem; font-weight: 600; color: var(--brown-mid); }
 
@@ -155,12 +148,7 @@
       box-shadow: 0 0 0 3px rgba(166, 28, 28, 0.14);
     }
 
-    .form-actions {
-      grid-column: 1 / -1;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+    .form-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; }
 
     .btn {
       border: none;
@@ -257,6 +245,20 @@
     }
     .page-btn.active { background: var(--red-primary); border-color: var(--red-primary); color: #fff; }
 
+    .log-box {
+      background: #24110c;
+      color: #fbe9e4;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 0.78rem;
+      padding: 12px;
+      border-radius: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -301,13 +303,11 @@
       body.printing-report .print-area { position: absolute; left: 0; top: 0; width: 100%; }
     }
 
-    /* Tablet (<= 1024px) */
     @media (max-width: 1024px) {
       .crud-form { grid-template-columns: repeat(2, 1fr); }
       .toolbar { grid-template-columns: 1fr 1fr; }
     }
 
-    /* Mobile (<= 720px) */
     @media (max-width: 720px) {
       .stats-grid, .crud-form, .toolbar { grid-template-columns: 1fr; }
       .table-wrap { display: none; }
@@ -329,13 +329,13 @@
         </svg>
         <div>
           <div class="brand-title">Grand Nusantara Hotel</div>
-          <div class="brand-sub">Halaman Fungsi (CRUD & Ekspor) • <strong>CJ Tech</strong></div>
+          <div class="brand-sub">Back-End Engine (<code>fungsi.html</code>) • <strong>CJ Tech</strong></div>
         </div>
       </div>
 
-      <nav class="nav-links" aria-label="Navigasi Halaman">
-        <a href="tampilan.html" class="nav-pill">1. Halaman Tampilan</a>
-        <a href="fungsi.html" class="nav-pill active">2. Halaman Fungsi</a>
+      <nav class="nav-links" aria-label="Navigasi Front-End dan Back-End">
+        <a href="index.html" class="nav-pill">Front-End (index.html)</a>
+        <a href="fungsi.html" class="nav-pill active">Back-End (fungsi.html)</a>
       </nav>
     </div>
   </header>
@@ -356,10 +356,10 @@
       </div>
     </section>
 
-    <!-- Form Create & Update -->
     <section class="card">
       <div class="card-header">
-        <h2 class="card-title" id="formHeading">Tambah Reservasi Baru (Create)</h2>
+        <h2 class="card-title" id="formHeading">Tambah Reservasi Baru (POST / Create)</h2>
+        <span class="api-status">HotelBackendService • READY</span>
       </div>
       <form class="crud-form" id="reservationForm">
         <input type="hidden" id="editId" />
@@ -407,7 +407,6 @@
       </form>
     </section>
 
-    <!-- Kontrol Data, Filter, Ekspor & Paginasi -->
     <section class="card print-area">
       <div class="card-header">
         <h2 class="card-title">Manajemen Data & Histori Menginap</h2>
@@ -467,9 +466,15 @@
         <div class="pagination-pages" id="paginationPages"></div>
       </div>
     </section>
+
+    <section class="card" aria-label="Log Proses Back-End">
+      <div class="card-header">
+        <h2 class="card-title">Log Eksekusi Back-End Service</h2>
+      </div>
+      <div class="log-box" id="backendLog"></div>
+    </section>
   </main>
 
-  <!-- Modal Invoice -->
   <div class="modal-backdrop hidden" id="invoiceModal" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; padding-bottom:10px; border-bottom:2px solid var(--brown-dark);">
@@ -487,12 +492,13 @@
   </div>
 
   <div class="mobile-bottom-nav">
-    <a href="tampilan.html" class="btn btn-secondary btn-sm">Tampilan</a>
-    <a href="fungsi.html" class="btn btn-primary btn-sm">Halaman Fungsi</a>
+    <a href="index.html" class="btn btn-secondary btn-sm">Front-End</a>
+    <a href="fungsi.html" class="btn btn-primary btn-sm">Back-End</a>
   </div>
 
   <script>
     const STORAGE_KEY = "cjtech_hotel_reservations_v2";
+    const CHANNEL_NAME = "cjtech_hotel_sync_channel";
     const ROOM_RATES = {
       "Deluxe King — 201": 750000,
       "Superior Twin — 105": 550000,
@@ -500,37 +506,107 @@
       "Family Room — 308": 980000
     };
 
-    let reservations = loadReservations();
+    const channel = "BroadcastChannel" in window ? new BroadcastChannel(CHANNEL_NAME) : null;
+
+    function writeLog(message) {
+      const box = document.getElementById("backendLog");
+      const time = new Date().toLocaleTimeString("id-ID");
+      const line = document.createElement("div");
+      line.textContent = `[${time}] ${message}`;
+      box.prepend(line);
+    }
+
+    // Lapisan Back-End / Service Engine
+    const HotelBackendService = {
+      readAll() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      },
+
+      writeAll(list) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        if (channel) channel.postMessage({ type: "DATA_UPDATED" });
+      },
+
+      calcNights(checkIn, checkOut) {
+        const days = Math.round((new Date(checkOut + "T00:00:00") - new Date(checkIn + "T00:00:00")) / 86400000);
+        return days > 0 ? days : 1;
+      },
+
+      calcTotal(roomType, checkIn, checkOut) {
+        const rate = ROOM_RATES[roomType] || 650000;
+        const nights = this.calcNights(checkIn, checkOut);
+        return { rate, nights, total: rate * nights };
+      },
+
+      hasRoomConflict(payload, ignoreId = null) {
+        if (payload.stayStatus === "Selesai (Check-Out)") return false;
+        const startA = new Date(payload.checkIn + "T00:00:00");
+        const endA = new Date(payload.checkOut + "T00:00:00");
+
+        return this.readAll().some((item) => {
+          if (ignoreId && item.id === ignoreId) return false;
+          if (item.roomType !== payload.roomType) return false;
+          if (item.stayStatus === "Selesai (Check-Out)") return false;
+          const startB = new Date(item.checkIn + "T00:00:00");
+          const endB = new Date(item.checkOut + "T00:00:00");
+          return startA < endB && endA > startB;
+        });
+      },
+
+      validate(payload, ignoreId = null) {
+        if (!payload.guestName) return { ok: false, error: "Nama tamu wajib diisi." };
+        if (payload.checkOut <= payload.checkIn) {
+          return { ok: false, error: "Tanggal Check-Out harus setelah tanggal Check-In." };
+        }
+        if (this.hasRoomConflict(payload, ignoreId)) {
+          return { ok: false, error: `Kamar "${payload.roomType}" sudah terisi pada rentang tanggal tersebut.` };
+        }
+        return { ok: true };
+      },
+
+      create(payload) {
+        const check = this.validate(payload);
+        if (!check.ok) return check;
+        const list = this.readAll();
+        const record = { id: `RSV-${String(Date.now()).slice(-4)}`, ...payload };
+        list.unshift(record);
+        this.writeAll(list);
+        writeLog(`POST /reservations -> Created ${record.id} (${record.guestName})`);
+        return { ok: true, data: record };
+      },
+
+      update(id, payload) {
+        const check = this.validate(payload, id);
+        if (!check.ok) return check;
+        const list = this.readAll().map((r) => (r.id === id ? { ...r, ...payload } : r));
+        this.writeAll(list);
+        writeLog(`PUT /reservations/${id} -> Updated (${payload.guestName})`);
+        return { ok: true };
+      },
+
+      clearAll() {
+        localStorage.removeItem(STORAGE_KEY);
+        if (channel) channel.postMessage({ type: "DATA_CLEARED" });
+        writeLog("DELETE /reservations/all -> LocalStorage cleared");
+      }
+    };
+
     let currentPage = 1;
     let pageSize = 5;
 
-    function loadReservations() {
-      try {
-        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-        return Array.isArray(parsed) ? parsed : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function saveReservations() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(reservations));
-    }
-
-    function calculateNights(checkIn, checkOut) {
-      const days = Math.round((new Date(checkOut + "T00:00:00") - new Date(checkIn + "T00:00:00")) / 86400000);
-      return days > 0 ? days : 1;
-    }
-
-    function formatRupiah(amount) {
-      return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(amount);
-    }
+    const formatRupiah = (n) =>
+      new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
 
     function getFilteredData() {
       const q = document.getElementById("searchInput").value.trim().toLowerCase();
       const pay = document.getElementById("filterPayment").value;
       const stay = document.getElementById("filterStay").value;
-      return reservations.filter((item) => {
+      return HotelBackendService.readAll().filter((item) => {
         const matchQ =
           item.guestName.toLowerCase().includes(q) ||
           item.roomType.toLowerCase().includes(q) ||
@@ -540,10 +616,11 @@
     }
 
     function renderStats() {
-      document.getElementById("statTotal").textContent = reservations.length;
+      const list = HotelBackendService.readAll();
+      document.getElementById("statTotal").textContent = list.length;
       document.getElementById("statNights").textContent =
-        `${reservations.reduce((s, r) => s + calculateNights(r.checkIn, r.checkOut), 0)} Malam`;
-      document.getElementById("statPaid").textContent = reservations.filter((r) => r.paymentStatus === "Lunas").length;
+        `${list.reduce((s, r) => s + HotelBackendService.calcNights(r.checkIn, r.checkOut), 0)} Malam`;
+      document.getElementById("statPaid").textContent = list.filter((r) => r.paymentStatus === "Lunas").length;
     }
 
     function renderPagination(totalItems) {
@@ -568,10 +645,7 @@
       pagesEl.innerHTML = html;
     }
 
-    window.goToPage = (p) => {
-      currentPage = p;
-      renderList();
-    };
+    window.goToPage = (p) => { currentPage = p; renderList(); };
 
     function renderList() {
       const filtered = getFilteredData();
@@ -591,8 +665,7 @@
       }
 
       tbody.innerHTML = pageItems.map((item) => {
-        const nights = calculateNights(item.checkIn, item.checkOut);
-        const total = (ROOM_RATES[item.roomType] || 650000) * nights;
+        const { nights, total } = HotelBackendService.calcTotal(item.roomType, item.checkIn, item.checkOut);
         const badgeKey = item.paymentStatus.split(" ")[0];
         return `
           <tr>
@@ -612,8 +685,7 @@
       }).join("");
 
       mobileCards.innerHTML = pageItems.map((item) => {
-        const nights = calculateNights(item.checkIn, item.checkOut);
-        const total = (ROOM_RATES[item.roomType] || 650000) * nights;
+        const { nights, total } = HotelBackendService.calcTotal(item.roomType, item.checkIn, item.checkOut);
         const badgeKey = item.paymentStatus.split(" ")[0];
         return `
           <div class="res-mobile-card">
@@ -643,13 +715,13 @@
     function resetForm() {
       document.getElementById("editId").value = "";
       document.getElementById("reservationForm").reset();
-      document.getElementById("formHeading").textContent = "Tambah Reservasi Baru (Create)";
+      document.getElementById("formHeading").textContent = "Tambah Reservasi Baru (POST / Create)";
       document.getElementById("submitBtn").textContent = "Simpan Reservasi";
       document.getElementById("cancelEditBtn").classList.add("hidden");
     }
 
     window.startEdit = (id) => {
-      const target = reservations.find((r) => r.id === id);
+      const target = HotelBackendService.readAll().find((r) => r.id === id);
       if (!target) return;
       document.getElementById("editId").value = target.id;
       document.getElementById("guestName").value = target.guestName;
@@ -658,17 +730,16 @@
       document.getElementById("checkOut").value = target.checkOut;
       document.getElementById("paymentStatus").value = target.paymentStatus;
       document.getElementById("stayStatus").value = target.stayStatus;
-      document.getElementById("formHeading").textContent = `Edit Reservasi ${target.id} (Update)`;
+      document.getElementById("formHeading").textContent = `Edit Reservasi ${target.id} (PUT / Update)`;
       document.getElementById("submitBtn").textContent = "Perbarui Data";
       document.getElementById("cancelEditBtn").classList.remove("hidden");
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     window.openInvoice = (id) => {
-      const item = reservations.find((r) => r.id === id);
+      const item = HotelBackendService.readAll().find((r) => r.id === id);
       if (!item) return;
-      const nights = calculateNights(item.checkIn, item.checkOut);
-      const rate = ROOM_RATES[item.roomType] || 650000;
+      const { rate, nights, total } = HotelBackendService.calcTotal(item.roomType, item.checkIn, item.checkOut);
       document.getElementById("invNumber").textContent = `INV-${item.id}`;
       document.getElementById("invIssuedAt").textContent = `Terbit: ${new Date().toLocaleDateString("id-ID")}`;
       document.getElementById("invContent").innerHTML = `
@@ -679,7 +750,7 @@
         <div><strong>Status Pembayaran:</strong> ${item.paymentStatus}</div>
         <div><strong>Status Menginap:</strong> ${item.stayStatus}</div>
         <div style="padding-top:8px; border-top:1px solid var(--border); font-size:1rem; color:var(--red-primary);">
-          <strong>Total Tagihan: ${formatRupiah(rate * nights)}</strong>
+          <strong>Total Tagihan: ${formatRupiah(total)}</strong>
         </div>
       `;
       document.getElementById("invoiceModal").classList.remove("hidden");
@@ -688,36 +759,26 @@
     document.getElementById("reservationForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const editId = document.getElementById("editId").value;
-      const guestName = document.getElementById("guestName").value.trim();
-      const roomType = document.getElementById("roomType").value;
-      const checkIn = document.getElementById("checkIn").value;
-      const checkOut = document.getElementById("checkOut").value;
-      const paymentStatus = document.getElementById("paymentStatus").value;
-      const stayStatus = document.getElementById("stayStatus").value;
+      const payload = {
+        guestName: document.getElementById("guestName").value.trim(),
+        roomType: document.getElementById("roomType").value,
+        checkIn: document.getElementById("checkIn").value,
+        checkOut: document.getElementById("checkOut").value,
+        paymentStatus: document.getElementById("paymentStatus").value,
+        stayStatus: document.getElementById("stayStatus").value
+      };
 
-      if (checkOut <= checkIn) {
-        alert("Tanggal Check-Out harus setelah tanggal Check-In.");
+      const res = editId
+        ? HotelBackendService.update(editId, payload)
+        : HotelBackendService.create(payload);
+
+      if (!res.ok) {
+        writeLog(`ERROR -> ${res.error}`);
+        alert(res.error);
         return;
       }
 
-      if (editId) {
-        reservations = reservations.map((r) =>
-          r.id === editId ? { ...r, guestName, roomType, checkIn, checkOut, paymentStatus, stayStatus } : r
-        );
-      } else {
-        reservations.unshift({
-          id: `RSV-${String(Date.now()).slice(-4)}`,
-          guestName,
-          roomType,
-          checkIn,
-          checkOut,
-          paymentStatus,
-          stayStatus
-        });
-        currentPage = 1;
-      }
-
-      saveReservations();
+      if (!editId) currentPage = 1;
       renderStats();
       renderList();
       resetForm();
@@ -736,6 +797,7 @@
 
     document.getElementById("exportPdfBtn").addEventListener("click", () => {
       if (!getFilteredData().length) return alert("Tidak ada data untuk diunduh ke PDF.");
+      writeLog("EXPORT /pdf -> Triggered print report");
       document.body.classList.add("printing-report");
       window.print();
       setTimeout(() => document.body.classList.remove("printing-report"), 500);
@@ -745,9 +807,8 @@
       const data = getFilteredData();
       if (!data.length) return alert("Tidak ada data untuk diunduh ke Excel.");
       const rows = data.map((item) => {
-        const nights = calculateNights(item.checkIn, item.checkOut);
-        const rate = ROOM_RATES[item.roomType] || 650000;
-        return `<tr><td>${item.id}</td><td>${item.guestName}</td><td>${item.roomType}</td><td>${item.checkIn}</td><td>${item.checkOut}</td><td>${nights}</td><td>${rate * nights}</td><td>${item.paymentStatus}</td><td>${item.stayStatus}</td></tr>`;
+        const { nights, total } = HotelBackendService.calcTotal(item.roomType, item.checkIn, item.checkOut);
+        return `<tr><td>${item.id}</td><td>${item.guestName}</td><td>${item.roomType}</td><td>${item.checkIn}</td><td>${item.checkOut}</td><td>${nights}</td><td>${total}</td><td>${item.paymentStatus}</td><td>${item.stayStatus}</td></tr>`;
       }).join("");
       const xls = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"/></head><body><table border="1"><thead><tr><th>ID</th><th>Nama Tamu</th><th>Kamar</th><th>Check-In</th><th>Check-Out</th><th>Malam</th><th>Total</th><th>Pembayaran</th><th>Histori</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
       const blob = new Blob([xls], { type: "application/vnd.ms-excel;charset=utf-8;" });
@@ -759,12 +820,12 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      writeLog(`EXPORT /excel -> Downloaded ${data.length} records`);
     });
 
     document.getElementById("clearStorageBtn").addEventListener("click", () => {
       if (!confirm("Hapus seluruh data reservasi di LocalStorage?")) return;
-      localStorage.removeItem(STORAGE_KEY);
-      reservations = [];
+      HotelBackendService.clearAll();
       currentPage = 1;
       resetForm();
       renderStats();
@@ -782,13 +843,14 @@
       renderList();
     });
 
-    // Pre-fill tipe kamar jika datang dari tombol "Pesan di Halaman Fungsi" di tampilan.html
     const params = new URLSearchParams(window.location.search);
     const selectedRoom = params.get("room");
     if (selectedRoom && ROOM_RATES[selectedRoom]) {
       document.getElementById("roomType").value = selectedRoom;
+      writeLog(`QUERY ?room -> Preselected "${selectedRoom}"`);
     }
 
+    writeLog("HotelBackendService initialized");
     renderStats();
     renderList();
   </script>
