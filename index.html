@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CJ Tech — Front-End Reservasi Hotel</title>
+  <title>CJ Tech — Sistem Reservasi Hotel</title>
   <style>
     :root {
       --bg-cream: #fdf6f2;
@@ -23,32 +23,36 @@
       --pending-text: #8f5400;
       --unpaid-bg: #fde8e8;
       --unpaid-text: #9b1c1c;
-      --radius: 14px;
+      --radius: 12px;
       --shadow: 0 6px 20px rgba(59, 28, 20, 0.08);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: "Segoe UI", Roboto, Arial, sans-serif;
       background-color: var(--bg-cream);
       color: var(--text-main);
       line-height: 1.5;
-      padding-bottom: 80px;
     }
 
+    /* Header & Logo CJ Tech */
     header {
       background: linear-gradient(135deg, var(--brown-dark) 0%, var(--red-primary) 100%);
       color: #fff;
-      padding: 14px 16px;
+      padding: 16px 20px;
       position: sticky;
       top: 0;
-      z-index: 30;
+      z-index: 20;
       box-shadow: 0 4px 14px rgba(59, 28, 20, 0.22);
     }
 
     .header-inner {
-      max-width: 1180px;
+      max-width: 1160px;
       margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
@@ -57,88 +61,100 @@
       gap: 12px;
     }
 
-    .brand { display: flex; align-items: center; gap: 10px; }
-    .brand-title { font-size: 1.08rem; font-weight: 700; }
-    .brand-sub { font-size: 0.75rem; color: #f7d9d2; }
-
-    .nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
-    .nav-pill {
-      text-decoration: none;
-      color: #fff;
-      background: rgba(255, 255, 255, 0.14);
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      min-height: 38px;
-      display: inline-flex;
+    .brand {
+      display: flex;
       align-items: center;
-    }
-    .nav-pill.active, .nav-pill:hover { background: #fff; color: var(--red-primary); }
-
-    main {
-      max-width: 1180px;
-      margin: 18px auto 32px;
-      padding: 0 14px;
-      display: grid;
-      gap: 18px;
+      gap: 12px;
     }
 
-    .hero-card {
-      background: linear-gradient(120deg, #fffdfb 0%, #fceee9 100%);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .hero-tag {
-      display: inline-block;
-      background: var(--red-soft);
-      color: var(--red-primary);
-      font-size: 0.72rem;
+    .brand-title {
+      font-size: 1.15rem;
       font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 999px;
-      margin-bottom: 8px;
+      letter-spacing: 0.3px;
     }
 
-    .hero-title { font-size: 1.3rem; color: var(--brown-dark); font-weight: 800; margin-bottom: 6px; }
-    .hero-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px; }
-    .hero-highlights { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip {
-      background: #fff;
-      border: 1px solid var(--border);
-      color: var(--brown-mid);
+    .brand-sub {
       font-size: 0.78rem;
-      font-weight: 600;
-      padding: 6px 10px;
-      border-radius: 8px;
+      color: #f7d9d2;
     }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .mode-switch {
+      display: flex;
+      background: rgba(255, 255, 255, 0.14);
+      padding: 4px;
+      border-radius: 999px;
+      gap: 4px;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      color: #fff;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .mode-btn.active {
+      background: #fff;
+      color: var(--red-primary);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1160px;
+      margin: 22px auto 48px;
+      padding: 0 16px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+    }
+
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-left: 5px solid var(--red-primary);
       border-radius: var(--radius);
-      padding: 14px;
+      padding: 14px 16px;
       box-shadow: var(--shadow);
     }
-    .stat-card:nth-child(2) { border-left-color: var(--brown-mid); }
-    .stat-card:nth-child(3) { border-left-color: #b83b14; }
-    .stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
-    .stat-value { font-size: 1.3rem; font-weight: 800; color: var(--brown-dark); margin-top: 2px; }
 
+    .stat-card:nth-child(2) {
+      border-left-color: var(--brown-mid);
+    }
+
+    .stat-card:nth-child(3) {
+      border-left-color: #b83b14;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--brown-dark);
+      margin-top: 2px;
+    }
+
+    /* Cards & Admin CRUD */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 18px;
       box-shadow: var(--shadow);
     }
 
@@ -147,73 +163,192 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 14px;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
     }
 
-    .card-title { font-size: 1.02rem; font-weight: 700; color: var(--brown-dark); }
-
-    .room-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    .room-card {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      background: #fffdfb;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--brown-dark);
     }
 
-    .room-code { font-size: 0.72rem; font-weight: 700; color: var(--red-primary); text-transform: uppercase; }
-    .room-name { font-size: 0.98rem; font-weight: 700; color: var(--brown-dark); }
-    .room-spec { font-size: 0.8rem; color: var(--text-muted); }
-    .room-price { font-size: 0.95rem; font-weight: 800; color: var(--brown-mid); }
+    .admin-badge {
+      background: var(--red-soft);
+      color: var(--red-primary);
+      border: 1px solid #f3bcbc;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .crud-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--brown-mid);
+    }
+
+    input, select {
+      padding: 9px 11px;
+      border: 1px solid #d5b4a9;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      background: #fffdfb;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--red-primary);
+      box-shadow: 0 0 0 3px rgba(166, 28, 28, 0.14);
+    }
+
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
 
     .btn {
       border: none;
-      border-radius: 9px;
-      padding: 10px 14px;
-      min-height: 40px;
-      font-size: 0.84rem;
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      text-decoration: none;
+      transition: 0.2s;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
       gap: 6px;
-      transition: 0.2s;
     }
 
-    .btn-primary { background: var(--red-primary); color: #fff; }
-    .btn-primary:hover { background: var(--red-hover); }
-    .btn-secondary { background: #efe2dc; color: var(--brown-dark); }
-    .btn-outline-red { background: #fff; color: var(--red-primary); border: 1px solid var(--red-primary); }
-    .btn-sm { padding: 7px 11px; min-height: 36px; font-size: 0.78rem; }
+    .btn-primary {
+      background: var(--red-primary);
+      color: #fff;
+    }
 
-    .history-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .res-card {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      background: #fffdfb;
+    .btn-primary:hover {
+      background: var(--red-hover);
+    }
+
+    .btn-secondary {
+      background: #efe2dc;
+      color: var(--brown-dark);
+    }
+
+    .btn-secondary:hover {
+      background: #e2cfc6;
+    }
+
+    .btn-outline-red {
+      background: #fff;
+      color: var(--red-primary);
+      border: 1px solid var(--red-primary);
+    }
+
+    .btn-outline-red:hover {
+      background: var(--red-soft);
+    }
+
+    .btn-brown {
+      background: var(--brown-mid);
+      color: #fff;
+    }
+
+    .btn-brown:hover {
+      background: var(--brown-dark);
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 0.76rem;
+    }
+
+    /* Toolbar & Export */
+    .toolbar {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .toolbar input, .toolbar select {
+      flex: 1 1 180px;
+    }
+
+    .export-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      background: #fdf4f1;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .export-group {
+      display: flex;
+      flex-wrap: wrap;
       gap: 8px;
     }
 
-    .res-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-    .res-meta {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-      font-size: 0.82rem;
-      color: var(--text-muted);
+    /* Table (Desktop) */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
     }
-    .res-meta strong { color: var(--brown-dark); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 840px;
+    }
+
+    th {
+      background: var(--brown-dark);
+      color: #fff;
+      text-align: left;
+      padding: 11px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #f0ded8;
+      font-size: 0.87rem;
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: #fdf3f0;
+    }
+
+    .action-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
 
     .badge {
       display: inline-block;
@@ -221,59 +356,276 @@
       border-radius: 999px;
       font-size: 0.74rem;
       font-weight: 700;
-      white-space: nowrap;
     }
 
-    .badge-Lunas { background: var(--paid-bg); color: var(--paid-text); }
-    .badge-DP { background: var(--pending-bg); color: var(--pending-text); }
-    .badge-Belum { background: var(--unpaid-bg); color: var(--unpaid-text); }
+    .badge-Lunas {
+      background: var(--paid-bg);
+      color: var(--paid-text);
+    }
 
+    .badge-DP {
+      background: var(--pending-bg);
+      color: var(--pending-text);
+    }
+
+    .badge-Belum\ Bayar {
+      background: var(--unpaid-bg);
+      color: var(--unpaid-text);
+    }
+
+    /* Mobile Cards View */
+    .mobile-list {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .res-mobile-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+      background: #fffdfb;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .res-mobile-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .res-mobile-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .res-mobile-meta strong {
+      color: var(--brown-dark);
+    }
+
+    /* Pagination */
+    .pagination-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .pagination-info {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .pagination-pages {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .page-btn {
+      min-width: 34px;
+      height: 34px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid #d5b4a9;
+      background: #fff;
+      color: var(--brown-dark);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: var(--red-soft);
+      border-color: var(--red-primary);
+      color: var(--red-primary);
+    }
+
+    .page-btn.active {
+      background: var(--red-primary);
+      border-color: var(--red-primary);
+      color: #fff;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Modal Invoice */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(42, 20, 14, 0.58);
+      background: rgba(42, 20, 14, 0.55);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 14px;
-      z-index: 60;
+      padding: 16px;
+      z-index: 50;
     }
 
     .modal-card {
       background: #fff;
+      border: 1px solid var(--border);
       border-radius: 14px;
-      max-width: 580px;
+      max-width: 640px;
       width: 100%;
-      max-height: 88vh;
+      max-height: 90vh;
       overflow-y: auto;
-      padding: 18px;
+      padding: 22px;
+      box-shadow: 0 16px 40px rgba(42, 20, 14, 0.25);
     }
 
-    .hidden { display: none !important; }
+    .invoice-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--brown-dark);
+      margin-bottom: 16px;
+    }
 
-    .mobile-bottom-nav {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #fff;
-      border-top: 1px solid var(--border);
-      padding: 8px 12px;
-      z-index: 40;
+    .invoice-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--red-primary);
+    }
+
+    .invoice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 0.88rem;
+    }
+
+    .invoice-box {
+      background: #fdf6f2;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .invoice-table {
+      width: 100%;
+      min-width: 0;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+
+    .invoice-table th {
+      background: var(--brown-mid);
+      color: #fff;
+      padding: 9px 10px;
+      font-size: 0.8rem;
+    }
+
+    .invoice-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.86rem;
+    }
+
+    .invoice-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fdf3f0;
+      border: 1px solid #eccbc0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      color: var(--brown-dark);
+      margin-bottom: 16px;
+    }
+
+    .invoice-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
       gap: 8px;
     }
 
-    @media (max-width: 1024px) {
-      .room-grid { grid-template-columns: repeat(2, 1fr); }
-      .hero-card { grid-template-columns: 1fr; }
+    .hidden {
+      display: none !important;
     }
 
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 18px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: #fff;
+    }
+
+    /* Print / PDF Styling */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      body.printing-invoice #invoiceModal,
+      body.printing-invoice #invoiceModal * {
+        visibility: visible;
+      }
+
+      body.printing-invoice #invoiceModal {
+        position: static;
+        background: none;
+        padding: 0;
+      }
+
+      body.printing-invoice .modal-card {
+        box-shadow: none;
+        border: none;
+        max-width: 100%;
+        max-height: none;
+      }
+
+      body.printing-invoice .invoice-actions {
+        display: none !important;
+      }
+
+      body.printing-report .print-report-area,
+      body.printing-report .print-report-area * {
+        visibility: visible;
+      }
+
+      body.printing-report .print-report-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+
+    /* Responsive Breakpoint */
     @media (max-width: 720px) {
-      body { padding-bottom: 84px; }
-      .stats-grid, .room-grid, .history-grid { grid-template-columns: 1fr; }
-      .header-inner .nav-links { display: none; }
-      .mobile-bottom-nav { display: grid; grid-template-columns: 1fr 1fr; }
+      .table-wrap {
+        display: none;
+      }
+
+      .mobile-list {
+        display: flex;
+      }
+
+      header {
+        padding: 14px;
+      }
     }
   </style>
 </head>
@@ -281,7 +633,8 @@
   <header>
     <div class="header-inner">
       <div class="brand">
-        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-label="Logo CJ Tech">
+        <!-- Logo SVG CJ Tech -->
+        <svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Logo CJ Tech">
           <rect width="48" height="48" rx="11" fill="#2A110B" stroke="#F3B4A6" stroke-width="1.5"/>
           <path d="M21 15C16.58 15 13 18.58 13 23C13 27.42 16.58 31 21 31C23.1 31 25.02 30.19 26.46 28.86" stroke="#FF6B57" stroke-width="3.2" stroke-linecap="round"/>
           <path d="M31 15V26.5C31 29.26 28.76 31.5 26 31.5H24.5" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
@@ -289,214 +642,677 @@
         </svg>
         <div>
           <div class="brand-title">Grand Nusantara Hotel</div>
-          <div class="brand-sub">Front-End (<code>index.html</code>) • <strong>CJ Tech</strong></div>
+          <div class="brand-sub">Powered by <strong>CJ Tech</strong> — Software Development</div>
         </div>
+      </div>
+
+      <div class="mode-switch" role="tablist" aria-label="Mode Tampilan">
+        <button class="mode-btn active" id="tabGuest" type="button">Reservasi & Histori</button>
+        <button class="mode-btn" id="tabAdmin" type="button">Panel Admin (CRUD)</button>
       </div>
     </div>
   </header>
 
   <main>
-    <section class="hero-card">
-      <div>
-        <span class="hero-tag">FRONT-END PRESENTATION LAYER</span>
-        <h1 class="hero-title">Tampilan Kamar & Ringkasan Menginap</h1>
-        <p class="hero-desc">
-          Halaman ini khusus menyajikan antarmuka responsif untuk mobile dan tablet. Seluruh pemrosesan data, validasi bentrok jadwal, CRUD, dan ekspor dijalankan oleh <strong>fungsi.html</strong>.
-        </p>
-        <div class="hero-highlights">
-          <span class="chip">Mobile & Tablet Ready</span>
-          <span class="chip">Katalog Kamar</span>
-          <span class="chip">Pratinjau Invoice</span>
-        </div>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <a href="fungsi.html" class="btn btn-primary">Buka Back-End (fungsi.html) →</a>
-        <button type="button" class="btn btn-secondary" id="seedSampleBtn">Seed Data ke Back-End</button>
-      </div>
-    </section>
-
-    <section class="stats-grid" aria-label="Statistik">
+    <!-- Ringkasan Statistik -->
+    <section class="stats-grid" aria-label="Ringkasan Reservasi">
       <div class="stat-card">
         <div class="stat-label">Total Reservasi</div>
-        <div class="stat-value" id="uiStatTotal">0</div>
+        <div class="stat-value" id="statTotal">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Total Malam</div>
-        <div class="stat-value" id="uiStatNights">0 Malam</div>
+        <div class="stat-label">Total Malam Menginap</div>
+        <div class="stat-value" id="statNights">0 Malam</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Pembayaran Lunas</div>
-        <div class="stat-value" id="uiStatPaid">0</div>
+        <div class="stat-value" id="statPaid">0</div>
       </div>
     </section>
 
-    <section class="card" aria-label="Katalog Kamar">
+    <!-- Form CRUD Admin (Create & Update saja, tanpa Delete data satuan) -->
+    <section class="card hidden" id="adminSection" aria-label="Form Admin CRUD">
       <div class="card-header">
-        <h2 class="card-title">Pilihan Kamar Tersedia</h2>
-        <span style="font-size:0.8rem; color:var(--text-muted);">Pilih kamar untuk lanjut ke <code>fungsi.html</code></span>
+        <h2 class="card-title" id="formHeading">Tambah Reservasi Baru (Create)</h2>
+        <span class="admin-badge">ADMIN • CREATE & UPDATE ONLY</span>
       </div>
-      <div class="room-grid" id="roomCatalog"></div>
+
+      <form class="crud-form" id="reservationForm">
+        <input type="hidden" id="editId" />
+
+        <div class="field">
+          <label for="guestName">Nama Tamu</label>
+          <input type="text" id="guestName" placeholder="Masukkan nama tamu" required />
+        </div>
+
+        <div class="field">
+          <label for="roomType">Tipe & Nomor Kamar</label>
+          <select id="roomType" required>
+            <option value="Deluxe King — 201">Deluxe King — 201 (Rp750.000/mlm)</option>
+            <option value="Superior Twin — 105">Superior Twin — 105 (Rp550.000/mlm)</option>
+            <option value="Executive Suite — 402">Executive Suite — 402 (Rp1.350.000/mlm)</option>
+            <option value="Family Room — 308">Family Room — 308 (Rp980.000/mlm)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="checkIn">Tanggal Check-In</label>
+          <input type="date" id="checkIn" required />
+        </div>
+
+        <div class="field">
+          <label for="checkOut">Tanggal Check-Out</label>
+          <input type="date" id="checkOut" required />
+        </div>
+
+        <div class="field">
+          <label for="paymentStatus">Status Pembayaran</label>
+          <select id="paymentStatus" required>
+            <option value="Lunas">Lunas</option>
+            <option value="DP">DP</option>
+            <option value="Belum Bayar">Belum Bayar</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="stayStatus">Status Histori Menginap</label>
+          <select id="stayStatus" required>
+            <option value="Aktif Menginap">Aktif Menginap</option>
+            <option value="Akan Datang">Akan Datang</option>
+            <option value="Selesai (Check-Out)">Selesai (Check-Out)</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn">Simpan Reservasi</button>
+          <button type="button" class="btn btn-secondary hidden" id="cancelEditBtn">Batal Edit</button>
+        </div>
+      </form>
     </section>
 
-    <section class="card" aria-label="Ringkasan Histori">
+    <!-- Daftar Reservasi & Histori -->
+    <section class="card print-report-area" aria-label="Daftar Reservasi dan Histori">
       <div class="card-header">
-        <h2 class="card-title">Ringkasan Reservasi Terbaru</h2>
-        <a href="fungsi.html" class="btn btn-outline-red btn-sm">Kelola di Back-End</a>
+        <h2 class="card-title">Daftar Reservasi & Histori Menginap</h2>
+        <span class="badge badge-Lunas" id="modeIndicator">Mode Tamu / Resepsionis</span>
       </div>
-      <div class="history-grid" id="uiHistoryList"></div>
+
+      <div class="export-bar">
+        <div class="export-group">
+          <button type="button" class="btn btn-brown btn-sm" id="exportExcelBtn">Download Excel (.xls)</button>
+          <button type="button" class="btn btn-primary btn-sm" id="exportPdfBtn">Download PDF Histori</button>
+        </div>
+        <button type="button" class="btn btn-outline-red btn-sm" id="clearStorageBtn">Hapus LocalStorage</button>
+      </div>
+
+      <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="Cari ID, nama tamu, atau kamar..." />
+        <select id="filterPayment">
+          <option value="ALL">Semua Status Pembayaran</option>
+          <option value="Lunas">Lunas</option>
+          <option value="DP">DP</option>
+          <option value="Belum Bayar">Belum Bayar</option>
+        </select>
+        <select id="filterStay">
+          <option value="ALL">Semua Histori</option>
+          <option value="Aktif Menginap">Aktif Menginap</option>
+          <option value="Akan Datang">Akan Datang</option>
+          <option value="Selesai (Check-Out)">Selesai (Check-Out)</option>
+        </select>
+        <select id="pageSizeSelect" aria-label="Jumlah baris per halaman">
+          <option value="5">5 / halaman</option>
+          <option value="10">10 / halaman</option>
+          <option value="20">20 / halaman</option>
+        </select>
+      </div>
+
+      <!-- Tabel Desktop -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama Tamu</th>
+              <th>Kamar</th>
+              <th>Check-In / Out</th>
+              <th>Durasi</th>
+              <th>Pembayaran</th>
+              <th>Histori</th>
+              <th>Invoice</th>
+              <th class="admin-col hidden">Aksi Admin</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Kartu Mobile -->
+      <div class="mobile-list" id="mobileList"></div>
+
+      <!-- Pagination -->
+      <div class="pagination-bar" id="paginationBar">
+        <div class="pagination-info" id="paginationInfo">Menampilkan 0 data</div>
+        <div class="pagination-pages" id="paginationPages"></div>
+      </div>
     </section>
   </main>
 
-  <div class="modal-backdrop hidden" id="uiInvoiceModal" role="dialog" aria-modal="true">
+  <!-- Modal Invoice Per Menginap -->
+  <div class="modal-backdrop hidden" id="invoiceModal" role="dialog" aria-modal="true" aria-labelledby="invoiceModalTitle">
     <div class="modal-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border);">
-        <strong style="color:var(--red-primary);" id="uiInvCode">INV-000</strong>
-        <button type="button" class="btn btn-secondary btn-sm" id="uiCloseInv">Tutup</button>
+      <div class="invoice-head">
+        <div class="brand">
+          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Logo CJ Tech">
+            <rect width="48" height="48" rx="11" fill="#2A110B" stroke="#A61C1C" stroke-width="1.5"/>
+            <path d="M21 15C16.58 15 13 18.58 13 23C13 27.42 16.58 31 21 31C23.1 31 25.02 30.19 26.46 28.86" stroke="#FF6B57" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M31 15V26.5C31 29.26 28.76 31.5 26 31.5H24.5" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
+            <circle cx="35" cy="14" r="3" fill="#FF9E44"/>
+          </svg>
+          <div>
+            <div class="invoice-title" id="invoiceModalTitle">INVOICE MENGINAP</div>
+            <div style="font-size:0.78rem; color:#6e5046;">Grand Nusantara Hotel • System by <strong>CJ Tech</strong></div>
+          </div>
+        </div>
+        <div style="text-align:right; font-size:0.82rem;">
+          <div><strong id="invNumber">INV-000</strong></div>
+          <div id="invIssuedAt" style="color:#6e5046;"></div>
+        </div>
       </div>
-      <div id="uiInvBody" style="font-size:0.88rem; display:grid; gap:8px;"></div>
+
+      <div class="invoice-grid">
+        <div class="invoice-box">
+          <div style="font-size:0.75rem; color:#8d5342; font-weight:700;">DATA TAMU</div>
+          <div id="invGuest" style="font-weight:700; color:#3b1c14; margin-top:2px;"></div>
+          <div id="invStayStatus" style="font-size:0.82rem; color:#6e5046;"></div>
+        </div>
+        <div class="invoice-box">
+          <div style="font-size:0.75rem; color:#8d5342; font-weight:700;">PERIODE MENGINAP</div>
+          <div id="invDates" style="font-weight:700; color:#3b1c14; margin-top:2px;"></div>
+          <div id="invPaymentBadge" style="margin-top:4px;"></div>
+        </div>
+      </div>
+
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th>Deskripsi Kamar</th>
+            <th>Tarif / Malam</th>
+            <th>Durasi</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody id="invTableBody"></tbody>
+      </table>
+
+      <div class="invoice-total-row">
+        <span>TOTAL TAGIHAN MENGINAP</span>
+        <span id="invGrandTotal" style="color:#a61c1c; font-size:1.05rem;">Rp0</span>
+      </div>
+
+      <div class="invoice-actions">
+        <button type="button" class="btn btn-primary" id="printInvoiceBtn">Cetak / Simpan PDF Invoice</button>
+        <button type="button" class="btn btn-secondary" id="closeInvoiceBtn">Tutup</button>
+      </div>
     </div>
   </div>
 
-  <div class="mobile-bottom-nav">
-    <a href="index.html" class="btn btn-primary btn-sm">Front-End</a>
-    <a href="fungsi.html" class="btn btn-secondary btn-sm">Back-End</a>
-  </div>
+  <footer>
+    <strong>CJ Tech</strong> — Software Development • Sistem Manajemen Reservasi Hotel Responsif
+  </footer>
 
   <script>
     const STORAGE_KEY = "cjtech_hotel_reservations_v2";
-    const CHANNEL_NAME = "cjtech_hotel_sync_channel";
-    const ROOMS = [
-      { code: "KM-201", name: "Deluxe King — 201", spec: "King Bed • AC • Sarapan 2 Tamu", price: 750000 },
-      { code: "KM-105", name: "Superior Twin — 105", spec: "Twin Bed • Wi-Fi Cepat • Balkon", price: 550000 },
-      { code: "KM-402", name: "Executive Suite — 402", spec: "Living Area • City View • Lounge", price: 1350000 },
-      { code: "KM-308", name: "Family Room — 308", spec: "2 Bed • Kapasitas 4 Tamu • Bathtub", price: 980000 }
-    ];
 
-    const rupiah = (n) =>
-      new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+    const roomRates = {
+      "Deluxe King — 201": 750000,
+      "Superior Twin — 105": 550000,
+      "Executive Suite — 402": 1350000,
+      "Family Room — 308": 980000
+    };
 
-    const readStore = () => {
+    let reservations = loadReservations();
+    let isAdminMode = false;
+    let currentPage = 1;
+    let pageSize = 5;
+
+    function loadReservations() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return [];
       try {
-        const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-        return Array.isArray(raw) ? raw : [];
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : [];
       } catch {
         return [];
       }
-    };
-
-    const calcNights = (a, b) => {
-      const d = Math.round((new Date(b + "T00:00:00") - new Date(a + "T00:00:00")) / 86400000);
-      return d > 0 ? d : 1;
-    };
-
-    function renderRooms() {
-      document.getElementById("roomCatalog").innerHTML = ROOMS.map(
-        (r) => `
-          <div class="room-card">
-            <div>
-              <div class="room-code">${r.code}</div>
-              <div class="room-name">${r.name}</div>
-              <div class="room-spec">${r.spec}</div>
-            </div>
-            <div>
-              <div class="room-price" style="margin-bottom:8px;">${rupiah(r.price)} / malam</div>
-              <a href="fungsi.html?room=${encodeURIComponent(r.name)}" class="btn btn-primary btn-sm" style="width:100%;">
-                Pesan via Back-End
-              </a>
-            </div>
-          </div>
-        `
-      ).join("");
     }
 
-    function renderFrontEndSummary() {
-      const list = readStore();
-      document.getElementById("uiStatTotal").textContent = list.length;
-      document.getElementById("uiStatNights").textContent =
-        `${list.reduce((s, x) => s + calcNights(x.checkIn, x.checkOut), 0)} Malam`;
-      document.getElementById("uiStatPaid").textContent = list.filter((x) => x.paymentStatus === "Lunas").length;
+    function saveReservations() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reservations));
+    }
 
-      const wrap = document.getElementById("uiHistoryList");
-      if (!list.length) {
-        wrap.innerHTML = `<div class="res-card" style="grid-column:1/-1; color:var(--text-muted);">Belum ada data. Klik <strong>Seed Data ke Back-End</strong> atau buka <strong>fungsi.html</strong>.</div>`;
+    function clearLocalStorageData() {
+      const ok = confirm("Hapus seluruh data reservasi di LocalStorage browser? Data tidak dapat dikembalikan.");
+      if (!ok) return;
+      localStorage.removeItem(STORAGE_KEY);
+      reservations = [];
+      currentPage = 1;
+      resetForm();
+      renderStats();
+      renderList();
+    }
+
+    function calculateNights(checkIn, checkOut) {
+      const start = new Date(checkIn + "T00:00:00");
+      const end = new Date(checkOut + "T00:00:00");
+      const diffMs = end - start;
+      const days = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      return days > 0 ? days : 1;
+    }
+
+    function formatRupiah(amount) {
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+
+    function getFilteredData() {
+      const q = document.getElementById("searchInput").value.trim().toLowerCase();
+      const payFilter = document.getElementById("filterPayment").value;
+      const stayFilter = document.getElementById("filterStay").value;
+
+      return reservations.filter((item) => {
+        const matchText =
+          item.guestName.toLowerCase().includes(q) ||
+          item.roomType.toLowerCase().includes(q) ||
+          item.id.toLowerCase().includes(q);
+        const matchPay = payFilter === "ALL" || item.paymentStatus === payFilter;
+        const matchStay = stayFilter === "ALL" || item.stayStatus === stayFilter;
+        return matchText && matchPay && matchStay;
+      });
+    }
+
+    function renderStats() {
+      document.getElementById("statTotal").textContent = reservations.length;
+      const totalNights = reservations.reduce(
+        (sum, r) => sum + calculateNights(r.checkIn, r.checkOut),
+        0
+      );
+      document.getElementById("statNights").textContent = `${totalNights} Malam`;
+      const paidCount = reservations.filter((r) => r.paymentStatus === "Lunas").length;
+      document.getElementById("statPaid").textContent = paidCount;
+    }
+
+    function renderPagination(totalItems) {
+      const infoEl = document.getElementById("paginationInfo");
+      const pagesEl = document.getElementById("paginationPages");
+
+      if (totalItems === 0) {
+        infoEl.textContent = "Menampilkan 0 data";
+        pagesEl.innerHTML = "";
         return;
       }
 
-      wrap.innerHTML = list.slice(0, 4).map((item) => {
-        const nights = calcNights(item.checkIn, item.checkOut);
-        const room = ROOMS.find((r) => r.name === item.roomType);
-        const total = (room ? room.price : 650000) * nights;
-        const badgeKey = item.paymentStatus.split(" ")[0];
-        return `
-          <div class="res-card">
-            <div class="res-top">
-              <div>
-                <small style="color:var(--brown-soft); font-weight:700;">${item.id}</small>
-                <div style="font-weight:700; color:var(--brown-dark);">${item.guestName}</div>
-                <div style="font-size:0.82rem;">${item.roomType}</div>
-              </div>
-              <span class="badge badge-${badgeKey}">${item.paymentStatus}</span>
-            </div>
-            <div class="res-meta">
-              <div><strong>Durasi:</strong> ${nights} Malam</div>
-              <div><strong>Total:</strong> ${rupiah(total)}</div>
-              <div><strong>Check-In:</strong> ${item.checkIn}</div>
-              <div><strong>Check-Out:</strong> ${item.checkOut}</div>
-            </div>
-            <div>
-              <button type="button" class="btn btn-outline-red btn-sm" onclick="previewInv('${item.id}')">Lihat Invoice</button>
-            </div>
-          </div>
+      const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const startIdx = (currentPage - 1) * pageSize;
+      const endIdx = Math.min(startIdx + pageSize, totalItems);
+      infoEl.textContent = `Menampilkan ${startIdx + 1}–${endIdx} dari ${totalItems} reservasi (Hal ${currentPage} / ${totalPages})`;
+
+      let buttonsHtml = `
+        <button type="button" class="page-btn" ${currentPage === 1 ? "disabled" : ""} onclick="goToPage(${currentPage - 1})">Prev</button>
+      `;
+
+      for (let p = 1; p <= totalPages; p++) {
+        buttonsHtml += `
+          <button type="button" class="page-btn ${p === currentPage ? "active" : ""}" onclick="goToPage(${p})">${p}</button>
         `;
-      }).join("");
+      }
+
+      buttonsHtml += `
+        <button type="button" class="page-btn" ${currentPage === totalPages ? "disabled" : ""} onclick="goToPage(${currentPage + 1})">Next</button>
+      `;
+
+      pagesEl.innerHTML = buttonsHtml;
     }
 
-    window.previewInv = (id) => {
-      const item = readStore().find((r) => r.id === id);
-      if (!item) return;
-      const nights = calcNights(item.checkIn, item.checkOut);
-      const room = ROOMS.find((r) => r.name === item.roomType);
-      const rate = room ? room.price : 650000;
-      document.getElementById("uiInvCode").textContent = `INV-${item.id}`;
-      document.getElementById("uiInvBody").innerHTML = `
-        <div><strong>Tamu:</strong> ${item.guestName}</div>
-        <div><strong>Kamar:</strong> ${item.roomType}</div>
-        <div><strong>Periode:</strong> ${item.checkIn} s/d ${item.checkOut} (${nights} Malam)</div>
-        <div><strong>Status Pembayaran:</strong> ${item.paymentStatus}</div>
-        <div><strong>Status Menginap:</strong> ${item.stayStatus}</div>
-        <div style="padding-top:8px; border-top:1px solid var(--border); font-size:1rem; color:var(--red-primary);">
-          <strong>Total: ${rupiah(rate * nights)}</strong>
-        </div>
-      `;
-      document.getElementById("uiInvoiceModal").classList.remove("hidden");
+    window.goToPage = function (page) {
+      currentPage = page;
+      renderList();
     };
 
-    document.getElementById("uiCloseInv").addEventListener("click", () => {
-      document.getElementById("uiInvoiceModal").classList.add("hidden");
-    });
+    function renderList() {
+      const filtered = getFilteredData();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
 
-    document.getElementById("seedSampleBtn").addEventListener("click", () => {
-      const sample = [
-        { id: "RSV-1001", guestName: "Rina Kusuma", roomType: "Deluxe King — 201", checkIn: "2026-11-26", checkOut: "2026-11-28", paymentStatus: "Lunas", stayStatus: "Aktif Menginap" },
-        { id: "RSV-1002", guestName: "Budi Santoso", roomType: "Executive Suite — 402", checkIn: "2026-11-29", checkOut: "2026-12-01", paymentStatus: "DP", stayStatus: "Akan Datang" }
-      ];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sample));
-      if ("BroadcastChannel" in window) {
-        new BroadcastChannel(CHANNEL_NAME).postMessage({ type: "DATA_UPDATED" });
+      const startIdx = (currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + pageSize);
+
+      const tbody = document.getElementById("tableBody");
+      const mobileList = document.getElementById("mobileList");
+      const colSpanCount = isAdminMode ? 9 : 8;
+
+      document.querySelectorAll(".admin-col").forEach((el) => {
+        el.classList.toggle("hidden", !isAdminMode);
+      });
+
+      if (pageItems.length === 0) {
+        const emptyMsg =
+          reservations.length === 0
+            ? "Belum ada data reservasi. Gunakan menu Panel Admin (CRUD) untuk menambah data."
+            : "Tidak ada data reservasi yang cocok dengan filter.";
+
+        tbody.innerHTML = `<tr><td colspan="${colSpanCount}" style="text-align:center; padding:24px; color:#6e5046;">${emptyMsg}</td></tr>`;
+        mobileList.innerHTML = `<div class="res-mobile-card" style="text-align:center; color:#6e5046;">${emptyMsg}</div>`;
+        renderPagination(filtered.length);
+        return;
       }
-      renderFrontEndSummary();
-    });
 
-    window.addEventListener("storage", (e) => {
-      if (e.key === STORAGE_KEY) renderFrontEndSummary();
-    });
+      tbody.innerHTML = pageItems
+        .map((item) => {
+          const nights = calculateNights(item.checkIn, item.checkOut);
+          const rate = roomRates[item.roomType] || 650000;
+          const totalCost = rate * nights;
+          const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
 
-    if ("BroadcastChannel" in window) {
-      new BroadcastChannel(CHANNEL_NAME).addEventListener("message", renderFrontEndSummary);
+          return `
+            <tr>
+              <td><strong>${item.id}</strong></td>
+              <td>${item.guestName}</td>
+              <td>${item.roomType}</td>
+              <td>${item.checkIn} → ${item.checkOut}</td>
+              <td><strong>${nights} Malam</strong><br><small style="color:#6e5046;">${formatRupiah(totalCost)}</small></td>
+              <td><span class="badge ${badgeClass}">${item.paymentStatus}</span></td>
+              <td>${item.stayStatus}</td>
+              <td>
+                <button type="button" class="btn btn-outline-red btn-sm" onclick="openInvoice('${item.id}')">Invoice</button>
+              </td>
+              <td class="admin-col ${isAdminMode ? "" : "hidden"}">
+                <div class="action-btns">
+                  <button type="button" class="btn btn-brown btn-sm" onclick="startEdit('${item.id}')">Edit</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      mobileList.innerHTML = pageItems
+        .map((item) => {
+          const nights = calculateNights(item.checkIn, item.checkOut);
+          const rate = roomRates[item.roomType] || 650000;
+          const totalCost = rate * nights;
+          const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
+
+          return `
+            <div class="res-mobile-card">
+              <div class="res-mobile-top">
+                <div>
+                  <small style="color:#8d5342; font-weight:700;">${item.id}</small>
+                  <div style="font-weight:700; color:#3b1c14;">${item.guestName}</div>
+                  <div style="font-size:0.84rem;">${item.roomType}</div>
+                </div>
+                <span class="badge ${badgeClass}">${item.paymentStatus}</span>
+              </div>
+              <div class="res-mobile-meta">
+                <div><strong>Durasi:</strong> ${nights} Malam</div>
+                <div><strong>Histori:</strong> ${item.stayStatus}</div>
+                <div><strong>Check-In:</strong> ${item.checkIn}</div>
+                <div><strong>Check-Out:</strong> ${item.checkOut}</div>
+                <div style="grid-column: 1 / -1;"><strong>Total:</strong> ${formatRupiah(totalCost)}</div>
+              </div>
+              <div class="action-btns" style="margin-top:4px;">
+                <button type="button" class="btn btn-outline-red btn-sm" onclick="openInvoice('${item.id}')">Terbitkan Invoice</button>
+                ${
+                  isAdminMode
+                    ? `<button type="button" class="btn btn-brown btn-sm" onclick="startEdit('${item.id}')">Edit Data</button>`
+                    : ""
+                }
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+
+      renderPagination(filtered.length);
     }
 
-    renderRooms();
-    renderFrontEndSummary();
+    function exportExcelHistory() {
+      const data = getFilteredData();
+      if (data.length === 0) {
+        alert("Tidak ada data histori untuk diunduh ke Excel.");
+        return;
+      }
+
+      const rowsHtml = data
+        .map((item) => {
+          const nights = calculateNights(item.checkIn, item.checkOut);
+          const rate = roomRates[item.roomType] || 650000;
+          const totalCost = rate * nights;
+          return `
+            <tr>
+              <td>${item.id}</td>
+              <td>${item.guestName}</td>
+              <td>${item.roomType}</td>
+              <td>${item.checkIn}</td>
+              <td>${item.checkOut}</td>
+              <td>${nights}</td>
+              <td>${rate}</td>
+              <td>${totalCost}</td>
+              <td>${item.paymentStatus}</td>
+              <td>${item.stayStatus}</td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      const excelDoc = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:x="urn:schemas-microsoft-com:office:excel"
+              xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="UTF-8" /></head>
+        <body>
+          <h3>Histori Menginap — Grand Nusantara Hotel (CJ Tech)</h3>
+          <table border="1">
+            <thead>
+              <tr>
+                <th>ID Reservasi</th>
+                <th>Nama Tamu</th>
+                <th>Kamar</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+                <th>Durasi (Malam)</th>
+                <th>Tarif / Malam (IDR)</th>
+                <th>Total Tagihan (IDR)</th>
+                <th>Status Pembayaran</th>
+                <th>Status Histori</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob([excelDoc], { type: "application/vnd.ms-excel;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `histori-menginap-cjtech-${new Date().toISOString().slice(0, 10)}.xls`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportPdfHistory() {
+      const data = getFilteredData();
+      if (data.length === 0) {
+        alert("Tidak ada data histori untuk diunduh ke PDF.");
+        return;
+      }
+      document.body.classList.add("printing-report");
+      window.print();
+      setTimeout(() => document.body.classList.remove("printing-report"), 500);
+    }
+
+    window.openInvoice = function (id) {
+      const item = reservations.find((r) => r.id === id);
+      if (!item) return;
+
+      const nights = calculateNights(item.checkIn, item.checkOut);
+      const rate = roomRates[item.roomType] || 650000;
+      const total = rate * nights;
+      const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
+
+      document.getElementById("invNumber").textContent = `INV-${item.id}`;
+      document.getElementById("invIssuedAt").textContent = `Terbit: ${new Date().toLocaleDateString("id-ID")}`;
+      document.getElementById("invGuest").textContent = item.guestName;
+      document.getElementById("invStayStatus").textContent = `Status Menginap: ${item.stayStatus}`;
+      document.getElementById("invDates").textContent = `${item.checkIn} s/d ${item.checkOut} (${nights} Malam)`;
+      document.getElementById("invPaymentBadge").innerHTML = `<span class="badge ${badgeClass}">Pembayaran: ${item.paymentStatus}</span>`;
+
+      document.getElementById("invTableBody").innerHTML = `
+        <tr>
+          <td>Akomodasi Kamar (${item.roomType})</td>
+          <td>${formatRupiah(rate)}</td>
+          <td>${nights} Malam</td>
+          <td><strong>${formatRupiah(total)}</strong></td>
+        </tr>
+      `;
+      document.getElementById("invGrandTotal").textContent = formatRupiah(total);
+
+      document.getElementById("invoiceModal").classList.remove("hidden");
+    };
+
+    function closeInvoiceModal() {
+      document.getElementById("invoiceModal").classList.add("hidden");
+    }
+
+    function setMode(admin) {
+      isAdminMode = admin;
+      document.getElementById("tabGuest").classList.toggle("active", !admin);
+      document.getElementById("tabAdmin").classList.toggle("active", admin);
+      document.getElementById("adminSection").classList.toggle("hidden", !admin);
+      document.getElementById("modeIndicator").textContent = admin
+        ? "Mode Admin (Create & Update)"
+        : "Mode Tamu / Resepsionis";
+      if (!admin) resetForm();
+      renderList();
+    }
+
+    function resetForm() {
+      document.getElementById("editId").value = "";
+      document.getElementById("reservationForm").reset();
+      document.getElementById("formHeading").textContent = "Tambah Reservasi Baru (Create)";
+      document.getElementById("submitBtn").textContent = "Simpan Reservasi";
+      document.getElementById("cancelEditBtn").classList.add("hidden");
+    }
+
+    window.startEdit = function (id) {
+      const target = reservations.find((r) => r.id === id);
+      if (!target) return;
+
+      setMode(true);
+      document.getElementById("editId").value = target.id;
+      document.getElementById("guestName").value = target.guestName;
+      document.getElementById("roomType").value = target.roomType;
+      document.getElementById("checkIn").value = target.checkIn;
+      document.getElementById("checkOut").value = target.checkOut;
+      document.getElementById("paymentStatus").value = target.paymentStatus;
+      document.getElementById("stayStatus").value = target.stayStatus;
+
+      document.getElementById("formHeading").textContent = `Edit Reservasi ${target.id} (Update)`;
+      document.getElementById("submitBtn").textContent = "Perbarui Data";
+      document.getElementById("cancelEditBtn").classList.remove("hidden");
+      document.getElementById("adminSection").scrollIntoView({ behavior: "smooth" });
+    };
+
+    document.getElementById("reservationForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const editId = document.getElementById("editId").value;
+      const guestName = document.getElementById("guestName").value.trim();
+      const roomType = document.getElementById("roomType").value;
+      const checkIn = document.getElementById("checkIn").value;
+      const checkOut = document.getElementById("checkOut").value;
+      const paymentStatus = document.getElementById("paymentStatus").value;
+      const stayStatus = document.getElementById("stayStatus").value;
+
+      if (checkOut <= checkIn) {
+        alert("Tanggal Check-Out harus setelah tanggal Check-In.");
+        return;
+      }
+
+      if (editId) {
+        reservations = reservations.map((item) =>
+          item.id === editId
+            ? { ...item, guestName, roomType, checkIn, checkOut, paymentStatus, stayStatus }
+            : item
+        );
+      } else {
+        const uniqueSuffix = String(Date.now()).slice(-4);
+        reservations.unshift({
+          id: `RSV-${uniqueSuffix}`,
+          guestName,
+          roomType,
+          checkIn,
+          checkOut,
+          paymentStatus,
+          stayStatus
+        });
+        currentPage = 1;
+      }
+
+      saveReservations();
+      renderStats();
+      renderList();
+      resetForm();
+    });
+
+    document.getElementById("cancelEditBtn").addEventListener("click", resetForm);
+    document.getElementById("tabGuest").addEventListener("click", () => setMode(false));
+    document.getElementById("tabAdmin").addEventListener("click", () => setMode(true));
+    document.getElementById("clearStorageBtn").addEventListener("click", clearLocalStorageData);
+    document.getElementById("exportExcelBtn").addEventListener("click", exportExcelHistory);
+    document.getElementById("exportPdfBtn").addEventListener("click", exportPdfHistory);
+    document.getElementById("closeInvoiceBtn").addEventListener("click", closeInvoiceModal);
+
+    document.getElementById("printInvoiceBtn").addEventListener("click", () => {
+      document.body.classList.add("printing-invoice");
+      window.print();
+      setTimeout(() => document.body.classList.remove("printing-invoice"), 500);
+    });
+
+    document.getElementById("invoiceModal").addEventListener("click", (e) => {
+      if (e.target.id === "invoiceModal") closeInvoiceModal();
+    });
+
+    document.getElementById("searchInput").addEventListener("input", () => {
+      currentPage = 1;
+      renderList();
+    });
+
+    document.getElementById("filterPayment").addEventListener("change", () => {
+      currentPage = 1;
+      renderList();
+    });
+
+    document.getElementById("filterStay").addEventListener("change", () => {
+      currentPage = 1;
+      renderList();
+    });
+
+    document.getElementById("pageSizeSelect").addEventListener("change", (e) => {
+      pageSize = Number(e.target.value) || 5;
+      currentPage = 1;
+      renderList();
+    });
+
+    renderStats();
+    renderList();
   </script>
 </body>
 </html>
