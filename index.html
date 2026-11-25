@@ -775,43 +775,55 @@
       background: #fff;
     }
 
-    /* Modern Print / PDF Styling */
+    /* 1-Sheet Print / PDF Styling */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 12mm;
+        margin: 8mm;
+      }
+
+      html, body {
+        width: 100%;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
       }
 
       body * {
         visibility: hidden;
       }
 
+      /* Mode Print Invoice 1 Lembar */
       body.printing-invoice #invoiceModal,
       body.printing-invoice #invoiceModal * {
         visibility: visible;
       }
 
       body.printing-invoice #invoiceModal {
-        position: static;
+        position: fixed !important;
+        inset: 0 !important;
         background: #ffffff !important;
         backdrop-filter: none !important;
         padding: 0 !important;
+        display: block !important;
+        overflow: hidden !important;
       }
 
       body.printing-invoice .modal-card {
         box-shadow: none !important;
         border: 1px solid #e6cfc7 !important;
-        border-radius: 12px !important;
+        border-radius: 10px !important;
         max-width: 100% !important;
+        width: 100% !important;
         max-height: none !important;
         overflow: visible !important;
+        transform: scale(var(--print-scale, 0.92));
+        transform-origin: top center;
       }
 
-      body.printing-invoice .invoice-modern-banner {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
+      body.printing-invoice .invoice-modern-banner,
       body.printing-invoice .invoice-meta-strip,
       body.printing-invoice .invoice-summary-box,
       body.printing-invoice .badge {
@@ -823,16 +835,46 @@
         display: none !important;
       }
 
+      /* Mode Print Laporan Histori 1 Lembar */
       body.printing-report .print-report-area,
       body.printing-report .print-report-area * {
         visibility: visible;
       }
 
       body.printing-report .print-report-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        border: 1px solid #e6cfc7 !important;
+        transform: scale(var(--print-scale, 0.88));
+        transform-origin: top left;
+      }
+
+      body.printing-report .export-bar,
+      body.printing-report .toolbar,
+      body.printing-report .pagination-bar,
+      body.printing-report .admin-col,
+      body.printing-report .mobile-list,
+      body.printing-report .mobile-quick-bar {
+        display: none !important;
+      }
+
+      body.printing-report .table-wrap {
+        display: block !important;
+        overflow: visible !important;
+      }
+
+      body.printing-report table {
+        min-width: 0 !important;
+        width: 100% !important;
+      }
+
+      body.printing-report th,
+      body.printing-report td {
+        padding: 6px 8px !important;
+        font-size: 0.76rem !important;
       }
     }
 
@@ -981,7 +1023,7 @@
         <div class="field">
           <label for="checkIn">Tanggal Menginap (Check-In)</label>
           <input type="date" id="checkIn" required />
-          <span class="field-hint" id="todayHint">Maksimal tanggal hari ini.</span>
+          <span class="field-hint" id="todayHint">Minimal tanggal hari ini (tidak bisa mundur).</span>
         </div>
 
         <div class="field">
@@ -1055,7 +1097,7 @@
       <div class="export-bar">
         <div class="export-group">
           <button type="button" class="btn btn-brown btn-sm" id="exportExcelBtn">Download Excel (.xls)</button>
-          <button type="button" class="btn btn-primary btn-sm" id="exportPdfBtn">Download PDF Histori</button>
+          <button type="button" class="btn btn-primary btn-sm" id="exportPdfBtn">Print / PDF Histori (1 Lembar)</button>
         </div>
         <button type="button" class="btn btn-outline-red btn-sm" id="clearStorageBtn">Hapus LocalStorage</button>
       </div>
@@ -1215,7 +1257,7 @@
         </div>
 
         <div class="invoice-actions">
-          <button type="button" class="btn btn-primary" id="printInvoiceBtn">Print / Simpan PDF Invoice</button>
+          <button type="button" class="btn btn-primary" id="printInvoiceBtn">Print / Simpan PDF (1 Lembar)</button>
           <button type="button" class="btn btn-secondary" id="closeInvoiceBtn">Tutup</button>
         </div>
       </div>
@@ -1255,15 +1297,18 @@
       const checkOutEl = document.getElementById("checkOut");
       const hintEl = document.getElementById("todayHint");
 
-      checkInEl.max = today;
+      // Tanggal check-in minimal hari ini (boleh hari ini atau ke depan, tidak boleh mundur)
+      checkInEl.min = today;
+      checkInEl.removeAttribute("max");
+
       if (hintEl) {
-        hintEl.textContent = `Tidak boleh lewat dari hari ini (${today}).`;
+        hintEl.textContent = `Minimal hari ini (${today}) atau tanggal ke depan (tidak bisa mundur).`;
       }
 
       if (checkInEl.value) {
         checkOutEl.min = checkInEl.value;
       } else {
-        checkOutEl.removeAttribute("min");
+        checkOutEl.min = today;
       }
     }
 
@@ -1334,6 +1379,12 @@
       return item.stayStatus === "Selesai (Check-Out)";
     }
 
+    /* Cek apakah reservasi sudah lunas sepenuhnya dan bisa check-out */
+    function canCheckOut(item) {
+      const { balance } = getBillingInfo(item);
+      return item.paymentStatus === "Lunas" && balance === 0;
+    }
+
     /* Deteksi Bentrok Tanggal Kamar */
     function checkRoomConflict(roomType, checkIn, checkOut, ignoreId = "") {
       if (!roomType || !checkIn || !checkOut || checkOut < checkIn) return null;
@@ -1368,17 +1419,17 @@
 
       if (!checkIn || !checkOut) {
         banner.classList.add("availability-neutral");
-        textEl.textContent = "Pilih tanggal check-in (maks. hari ini) dan check-out untuk mengecek ketersediaan kamar.";
+        textEl.textContent = `Pilih tanggal check-in (minimal ${today}) dan check-out untuk mengecek ketersediaan kamar.`;
         tagEl.className = "badge badge-DP";
         tagEl.textContent = "Menunggu Tanggal";
         return;
       }
 
-      if (checkIn > today) {
+      if (checkIn < today) {
         banner.classList.add("availability-conflict");
-        textEl.textContent = `Tanggal menginap (${checkIn}) tidak boleh lewat dari tanggal hari ini (${today}).`;
+        textEl.textContent = `Tanggal check-in (${checkIn}) tidak boleh mundur sebelum hari ini (${today}).`;
         tagEl.className = "badge badge-Belum\\ Bayar";
-        tagEl.textContent = "Melewati Hari Ini";
+        tagEl.textContent = "Tanggal Mundur";
         return;
       }
 
@@ -1416,10 +1467,12 @@
       const rate = roomRates[roomType] || 650000;
       const total = rate * nights;
 
-      if (paymentStatus === "Lunas" && Number(paidInput.value || 0) === 0) {
+      if (paymentStatus === "Lunas") {
         paidInput.value = total;
       } else if (paymentStatus === "Belum Bayar") {
         paidInput.value = 0;
+      } else if (paymentStatus === "DP" && Number(paidInput.value || 0) >= total) {
+        paidInput.value = Math.max(0, Math.floor(total * 0.5));
       }
 
       const paid = Math.max(0, Math.min(Number(paidInput.value || 0), total));
@@ -1520,7 +1573,17 @@
       renderList();
     };
 
+    /* Aksi Cepat Check-Out (hanya jika sudah lunas) */
     window.quickCheckOut = function (id) {
+      const target = reservations.find((r) => r.id === id);
+      if (!target) return;
+      if (!canCheckOut(target)) {
+        const { balance } = getBillingInfo(target);
+        alert(
+          `Check-Out ditolak: Reservasi ${target.id} belum Lunas (Sisa tagihan: ${formatRupiah(balance)}). Lunasi pembayaran terlebih dahulu.`
+        );
+        return;
+      }
       reservations = reservations.map((item) =>
         item.id === id ? { ...item, stayStatus: "Selesai (Check-Out)" } : item
       );
@@ -1576,12 +1639,13 @@
           const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
           const checkedOut = isCheckedOut(item);
           const futureCheckIn = isFutureCheckIn(item.checkIn);
+          const paidEnoughForCheckout = canCheckOut(item);
 
           let stayActionBtn = "";
           if (item.stayStatus === "Aktif Menginap") {
-            stayActionBtn = `<button type="button" class="btn btn-secondary btn-sm" onclick="quickCheckOut('${item.id}')">Check-Out</button>`;
+            stayActionBtn = `<button type="button" class="btn btn-secondary btn-sm ${paidEnoughForCheckout ? "" : "is-disabled"}" ${paidEnoughForCheckout ? "" : 'disabled title="Hanya bisa Check-Out jika pembayaran sudah Lunas"'} onclick="quickCheckOut('${item.id}')">${paidEnoughForCheckout ? "Check-Out" : "Belum Lunas"}</button>`;
           } else if (!checkedOut) {
-            stayActionBtn = `<button type="button" class="btn btn-secondary btn-sm ${futureCheckIn ? "is-disabled" : ""}" ${futureCheckIn ? 'disabled title="Check-in belum tersedia karena jadwal masih lama"' : ""} onclick="quickCheckIn('${item.id}')">Check-In</button>`;
+            stayActionBtn = `<button type="button" class="btn btn-secondary btn-sm ${futureCheckIn ? "is-disabled" : ""}" ${futureCheckIn ? 'disabled title="Check-in belum tersedia karena jadwal masih di masa depan"' : ""} onclick="quickCheckIn('${item.id}')">Check-In</button>`;
           }
 
           return `
@@ -1626,10 +1690,11 @@
           const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
           const checkedOut = isCheckedOut(item);
           const futureCheckIn = isFutureCheckIn(item.checkIn);
+          const paidEnoughForCheckout = canCheckOut(item);
 
           let mobileStayBtn = "";
           if (item.stayStatus === "Aktif Menginap") {
-            mobileStayBtn = `<button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="quickCheckOut('${item.id}')">Tandai Check-Out</button>`;
+            mobileStayBtn = `<button type="button" class="btn btn-secondary btn-sm ${paidEnoughForCheckout ? "" : "is-disabled"}" style="flex:1;" ${paidEnoughForCheckout ? "" : "disabled"} onclick="quickCheckOut('${item.id}')">${paidEnoughForCheckout ? "Tandai Check-Out" : "Lunasi Dulu u/ Check-Out"}</button>`;
           } else if (!checkedOut) {
             mobileStayBtn = `<button type="button" class="btn btn-secondary btn-sm ${futureCheckIn ? "is-disabled" : ""}" style="flex:1;" ${futureCheckIn ? "disabled" : ""} onclick="quickCheckIn('${item.id}')">${futureCheckIn ? "Check-In Belum Dibuka" : "Tandai Check-In"}</button>`;
           }
@@ -1762,15 +1827,32 @@
       URL.revokeObjectURL(url);
     }
 
+    /* Hitung skala otomatis agar konten pas dalam 1 lembar A4 */
+    function fitSingleSheetPrint(targetSelector, baseScale = 0.92) {
+      const el = document.querySelector(targetSelector);
+      if (!el) return;
+      // Tinggi efektif area cetak A4 portrait dengan margin 8mm (~1040px pada 96dpi)
+      const maxPrintableHeightPx = 1020;
+      const rect = el.getBoundingClientRect();
+      const currentHeight = el.scrollHeight || rect.height || 1000;
+      const ratio = maxPrintableHeightPx / currentHeight;
+      const computedScale = Math.max(0.45, Math.min(baseScale, Number(ratio.toFixed(3))));
+      document.documentElement.style.setProperty("--print-scale", String(computedScale));
+    }
+
     function exportPdfHistory() {
       const data = getFilteredData();
       if (data.length === 0) {
         alert("Tidak ada data histori untuk diunduh ke PDF.");
         return;
       }
+      fitSingleSheetPrint(".print-report-area", 0.92);
       document.body.classList.add("printing-report");
       window.print();
-      setTimeout(() => document.body.classList.remove("printing-report"), 500);
+      setTimeout(() => {
+        document.body.classList.remove("printing-report");
+        document.documentElement.style.removeProperty("--print-scale");
+      }, 500);
     }
 
     window.openInvoice = function (id) {
@@ -1838,10 +1920,13 @@
     function resetForm() {
       document.getElementById("editId").value = "";
       document.getElementById("reservationForm").reset();
+      document.getElementById("checkIn").value = getTodayISO();
+      document.getElementById("checkOut").value = getTodayISO();
       document.getElementById("paidAmount").value = 0;
       document.getElementById("formHeading").textContent = "Tambah Reservasi Baru (Create)";
       document.getElementById("submitBtn").textContent = "Simpan Reservasi";
       document.getElementById("cancelEditBtn").classList.add("hidden");
+      applyDateConstraints();
       updateAvailabilityBanner();
       syncBillingPreview();
     }
@@ -1870,6 +1955,7 @@
       document.getElementById("formHeading").textContent = `Edit Reservasi ${target.id} (Update)`;
       document.getElementById("submitBtn").textContent = "Perbarui Data";
       document.getElementById("cancelEditBtn").classList.remove("hidden");
+      applyDateConstraints();
       updateAvailabilityBanner();
       syncBillingPreview();
       document.getElementById("adminSection").scrollIntoView({ behavior: "smooth" });
@@ -1884,7 +1970,7 @@
       const checkIn = document.getElementById("checkIn").value;
       const checkOut = document.getElementById("checkOut").value;
       const paymentStatus = document.getElementById("paymentStatus").value;
-      const paidAmount = Math.max(0, Number(document.getElementById("paidAmount").value || 0));
+      let paidAmount = Math.max(0, Number(document.getElementById("paidAmount").value || 0));
       const stayStatus = document.getElementById("stayStatus").value;
       const paymentNote = document.getElementById("paymentNote").value.trim();
 
@@ -1897,8 +1983,9 @@
         }
       }
 
-      if (checkIn > today) {
-        alert(`Tanggal menginap (${checkIn}) tidak boleh lewat dari tanggal hari ini (${today}).`);
+      // Validasi tanggal check-in tidak boleh mundur (harus >= hari ini)
+      if (!checkIn || checkIn < today) {
+        alert(`Tanggal check-in (${checkIn || "-"}) tidak boleh mundur sebelum hari ini (${today}). Pilih hari ini atau tanggal ke depan.`);
         return;
       }
 
@@ -1909,6 +1996,26 @@
 
       if (stayStatus === "Aktif Menginap" && checkIn > today) {
         alert("Status Aktif Menginap tidak dapat dipilih untuk tanggal check-in di masa depan.");
+        return;
+      }
+
+      const nights = calculateNights(checkIn, checkOut);
+      const rate = roomRates[roomType] || 650000;
+      const totalTagihan = rate * nights;
+
+      if (paymentStatus === "Lunas") {
+        paidAmount = totalTagihan;
+      } else if (paymentStatus === "Belum Bayar") {
+        paidAmount = 0;
+      }
+
+      const sisaTagihan = Math.max(0, totalTagihan - Math.min(paidAmount, totalTagihan));
+
+      // Validasi check-out hanya boleh jika sudah lunas
+      if (stayStatus === "Selesai (Check-Out)" && (paymentStatus !== "Lunas" || sisaTagihan > 0)) {
+        alert(
+          `Status Selesai (Check-Out) hanya dapat dipilih jika pembayaran sudah Lunas (Sisa tagihan saat ini: ${formatRupiah(sisaTagihan)}).`
+        );
         return;
       }
 
@@ -1987,9 +2094,13 @@
     document.getElementById("closeInvoiceBtn").addEventListener("click", closeInvoiceModal);
 
     document.getElementById("printInvoiceBtn").addEventListener("click", () => {
+      fitSingleSheetPrint(".modal-card", 0.94);
       document.body.classList.add("printing-invoice");
       window.print();
-      setTimeout(() => document.body.classList.remove("printing-invoice"), 500);
+      setTimeout(() => {
+        document.body.classList.remove("printing-invoice");
+        document.documentElement.style.removeProperty("--print-scale");
+      }, 500);
     });
 
     document.getElementById("invoiceModal").addEventListener("click", (e) => {
@@ -2017,6 +2128,8 @@
       renderList();
     });
 
+    document.getElementById("checkIn").value = getTodayISO();
+    document.getElementById("checkOut").value = getTodayISO();
     applyDateConstraints();
     updateAvailabilityBanner();
     syncBillingPreview();
