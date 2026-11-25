@@ -29,7 +29,7 @@ function getOriginalCheckInMin(editId) {
   if (!editId) return today;
   const existing = reservations.find((r) => r.id === editId);
   if (!existing || !existing.checkIn) return today;
-  // Saat edit: tidak boleh mundur dari tanggal awal maupun dari hari ini
+  // Saat edit: tidak boleh mundur dari tanggal awal maupun dari hari ini; boleh maju
   return existing.checkIn > today ? existing.checkIn : today;
 }
 
@@ -182,7 +182,6 @@ function checkRoomConflict(roomType, checkIn, checkOut, ignoreId = "") {
 
 function updateAvailabilityBanner() {
   applyDateConstraints();
-  const today = getTodayISO();
   const roomType = document.getElementById("roomType").value;
   const checkIn = document.getElementById("checkIn").value;
   const checkOut = document.getElementById("checkOut").value;
@@ -195,30 +194,29 @@ function updateAvailabilityBanner() {
 
   banner.classList.remove("availability-ok", "availability-conflict", "availability-neutral");
 
-  // Di updateAvailabilityBanner():
-if (!checkIn || !checkOut) {
-  banner.classList.add("availability-neutral");
-  textEl.textContent = `Pilih tanggal check-in (min. ${minCheckIn}, boleh maju) dan check-out (min. sama dengan check-in).`;
-  tagEl.className = "badge badge-DP";
-  tagEl.textContent = "Menunggu Tanggal";
-  return;
-}
+  if (!checkIn || !checkOut) {
+    banner.classList.add("availability-neutral");
+    textEl.textContent = `Pilih tanggal check-in (min. ${minCheckIn}, boleh maju) dan check-out (sama dengan check-in atau maju).`;
+    tagEl.className = "badge badge-DP";
+    tagEl.textContent = "Menunggu Tanggal";
+    return;
+  }
 
-if (checkIn < minCheckIn) {
-  banner.classList.add("availability-conflict");
-  textEl.textContent = `Tanggal check-in (${checkIn}) tidak boleh mundur dari ${minCheckIn}.`;
-  tagEl.className = "badge badge-Belum\\ Bayar";
-  tagEl.textContent = "Tanggal Mundur";
-  return;
-}
+  if (checkIn < minCheckIn) {
+    banner.classList.add("availability-conflict");
+    textEl.textContent = `Tanggal check-in (${checkIn}) tidak boleh mundur dari ${minCheckIn}.`;
+    tagEl.className = "badge badge-Belum\\ Bayar";
+    tagEl.textContent = "Tanggal Mundur";
+    return;
+  }
 
-if (checkOut < checkIn) {
-  banner.classList.add("availability-conflict");
-  textEl.textContent = "Tanggal Check-Out harus sama dengan tanggal Check-In atau maju.";
-  tagEl.className = "badge badge-Belum\\ Bayar";
-  tagEl.textContent = "Tanggal Tidak Valid";
-  return;
-}
+  if (checkOut < checkIn) {
+    banner.classList.add("availability-conflict");
+    textEl.textContent = "Tanggal Check-Out harus sama dengan tanggal Check-In atau maju.";
+    tagEl.className = "badge badge-Belum\\ Bayar";
+    tagEl.textContent = "Tanggal Tidak Valid";
+    return;
+  }
 
   const conflict = checkRoomConflict(roomType, checkIn, checkOut, editId);
   if (conflict) {
@@ -777,7 +775,7 @@ function submitReservation(e) {
   const roomType = document.getElementById("roomType").value;
   const checkIn = document.getElementById("checkIn").value;
   const checkOut = document.getElementById("checkOut").value;
-  let paymentStatus = document.getElementById("paymentStatus").value;
+  const paymentStatus = document.getElementById("paymentStatus").value;
   let paidAmount = Math.max(0, Number(document.getElementById("paidAmount").value || 0));
   const stayStatus = document.getElementById("stayStatus").value;
   const paymentNote = document.getElementById("paymentNote").value.trim();
@@ -790,22 +788,6 @@ function submitReservation(e) {
       return;
     }
 
-   // Di submitReservation(e):
-  const minCheckIn = getOriginalCheckInMin(editId);
-  if (checkIn < minCheckIn) {
-    alert(
-      editId
-        ? `Tanggal check-in (${checkIn}) tidak boleh mundur dari ${minCheckIn} (boleh maju).`
-        : `Tanggal check-in (${checkIn}) minimal hari ini (${today}) dan tidak boleh mundur (boleh maju).`
-    );
-    return;
-  }
-  
-  if (checkOut < checkIn) {
-    alert("Tanggal Check-Out tidak boleh lebih awal dari tanggal Check-In (harus sama atau maju).");
-    return;
-  }
-
     const expectedPaid = editLockedRemainingBalance !== null ? editLockedRemainingBalance : getBillingInfo(existing).balance;
     if (paidAmount !== expectedPaid) {
       alert(`Saat edit, nominal yang dibayar harus tepat sebesar sisa tagihan yang belum dibayar (${formatRupiah(expectedPaid)}), tidak boleh kurang atau lebih.`);
@@ -816,18 +798,18 @@ function submitReservation(e) {
     }
   }
 
-  if (checkIn > today) {
-    alert(`Tanggal menginap (${checkIn}) tidak boleh lewat dari tanggal hari ini (${today}).`);
+  const minCheckIn = getOriginalCheckInMin(editId);
+  if (!checkIn || checkIn < minCheckIn) {
+    alert(
+      editId
+        ? `Tanggal check-in (${checkIn || "-"}) tidak boleh mundur dari ${minCheckIn} (boleh maju).`
+        : `Tanggal check-in (${checkIn || "-"}) minimal hari ini (${today}) dan tidak boleh mundur (boleh maju).`
+    );
     return;
   }
 
-  if (checkOut < checkIn) {
-    alert("Tanggal Check-Out tidak boleh lebih awal dari tanggal Check-In.");
-    return;
-  }
-
-  if (stayStatus === "Aktif Menginap" && checkIn > today) {
-    alert("Status Aktif Menginap tidak dapat dipilih untuk tanggal check-in di masa depan.");
+  if (!checkOut || checkOut < checkIn) {
+    alert("Tanggal Check-Out harus sama dengan tanggal Check-In atau maju.");
     return;
   }
 
