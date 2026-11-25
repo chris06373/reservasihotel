@@ -191,7 +191,7 @@
       border-radius: 999px;
     }
 
-    /* Fitur 1: Banner Ketersediaan Kamar */
+    /* Banner Ketersediaan Kamar */
     .availability-banner {
       grid-column: 1 / -1;
       padding: 11px 14px;
@@ -224,7 +224,7 @@
       border-color: var(--border);
     }
 
-    /* Fitur 2: Ringkasan Tagihan & Sisa Bayar di Form */
+    /* Ringkasan Tagihan & Sisa Bayar di Form */
     .billing-preview {
       grid-column: 1 / -1;
       display: grid;
@@ -258,6 +258,11 @@
       display: flex;
       flex-direction: column;
       gap: 5px;
+    }
+
+    .field-hint {
+      font-size: 0.73rem;
+      color: var(--text-muted);
     }
 
     label {
@@ -305,12 +310,19 @@
       gap: 6px;
     }
 
+    .btn:disabled,
+    .btn.is-disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      pointer-events: auto;
+    }
+
     .btn-primary {
       background: var(--red-primary);
       color: #fff;
     }
 
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
       background: var(--red-hover);
     }
 
@@ -319,7 +331,7 @@
       color: var(--brown-dark);
     }
 
-    .btn-secondary:hover {
+    .btn-secondary:hover:not(:disabled) {
       background: #e2cfc6;
     }
 
@@ -329,7 +341,7 @@
       border: 1px solid var(--red-primary);
     }
 
-    .btn-outline-red:hover {
+    .btn-outline-red:hover:not(:disabled) {
       background: var(--red-soft);
     }
 
@@ -338,7 +350,7 @@
       color: #fff;
     }
 
-    .btn-brown:hover {
+    .btn-brown:hover:not(:disabled) {
       background: var(--brown-dark);
     }
 
@@ -389,7 +401,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 900px;
+      min-width: 920px;
     }
 
     th {
@@ -555,11 +567,12 @@
       box-shadow: 0 -6px 18px rgba(59, 28, 20, 0.12);
     }
 
-    /* Modal Invoice */
+    /* Modern Invoice Booking Kamar Modal */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(42, 20, 14, 0.55);
+      background: rgba(34, 15, 10, 0.62);
+      backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -568,84 +581,175 @@
     }
 
     .modal-card {
-      background: #fff;
+      background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      max-width: 660px;
+      border-radius: 18px;
+      max-width: 720px;
       width: 100%;
-      max-height: 90vh;
+      max-height: 92vh;
       overflow-y: auto;
-      padding: 22px;
-      box-shadow: 0 16px 40px rgba(42, 20, 14, 0.25);
+      padding: 0;
+      box-shadow: 0 24px 60px rgba(34, 15, 10, 0.28);
     }
 
-    .invoice-head {
+    .invoice-modern-banner {
+      background: linear-gradient(135deg, #2a110b 0%, #5c2519 55%, #a61c1c 100%);
+      color: #ffffff;
+      padding: 22px 24px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 12px;
-      padding-bottom: 14px;
-      border-bottom: 2px solid var(--brown-dark);
-      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .invoice-pill {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 6px;
     }
 
     .invoice-title {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       font-weight: 800;
-      color: var(--red-primary);
+      letter-spacing: 0.4px;
+      color: #ffffff;
+    }
+
+    .invoice-body-pad {
+      padding: 22px 24px 24px;
+    }
+
+    .invoice-meta-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      background: #fdf6f2;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      font-size: 0.82rem;
+    }
+
+    .invoice-meta-cell span {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .invoice-meta-cell strong {
+      color: var(--brown-dark);
+      font-size: 0.88rem;
     }
 
     .invoice-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
       gap: 12px;
-      margin-bottom: 16px;
-      font-size: 0.88rem;
+      margin-bottom: 18px;
+      font-size: 0.86rem;
     }
 
     .invoice-box {
-      background: #fdf6f2;
+      background: #fffdfb;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
+      border-radius: 12px;
+      padding: 13px 14px;
+    }
+
+    .invoice-box-label {
+      font-size: 0.72rem;
+      color: var(--red-primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .invoice-table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
     }
 
     .invoice-table {
       width: 100%;
       min-width: 0;
       border-collapse: collapse;
-      margin-bottom: 14px;
     }
 
     .invoice-table th {
-      background: var(--brown-mid);
+      background: var(--brown-dark);
       color: #fff;
-      padding: 9px 10px;
-      font-size: 0.8rem;
+      padding: 10px 12px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
     }
 
     .invoice-table td {
-      padding: 9px 10px;
-      border-bottom: 1px solid var(--border);
+      padding: 11px 12px;
+      border-bottom: 1px solid #f2e2dc;
       font-size: 0.86rem;
+    }
+
+    .invoice-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .invoice-footer-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .invoice-note-box {
+      background: #fdf9f7;
+      border: 1px dashed #d8b7ac;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .invoice-note-box strong {
+      color: var(--brown-dark);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.82rem;
     }
 
     .invoice-summary-box {
       background: #fdf3f0;
       border: 1px solid #eccbc0;
-      padding: 12px 14px;
-      border-radius: 10px;
+      padding: 13px 15px;
+      border-radius: 12px;
       color: var(--brown-dark);
-      margin-bottom: 16px;
       display: grid;
-      gap: 6px;
-      font-size: 0.9rem;
+      gap: 7px;
+      font-size: 0.86rem;
     }
 
     .invoice-summary-line {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
     }
 
     .invoice-actions {
@@ -653,6 +757,8 @@
       flex-wrap: wrap;
       justify-content: flex-end;
       gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
     }
 
     .hidden {
@@ -669,8 +775,13 @@
       background: #fff;
     }
 
-    /* Print / PDF Styling */
+    /* Modern Print / PDF Styling */
     @media print {
+      @page {
+        size: A4 portrait;
+        margin: 12mm;
+      }
+
       body * {
         visibility: hidden;
       }
@@ -682,15 +793,30 @@
 
       body.printing-invoice #invoiceModal {
         position: static;
-        background: none;
-        padding: 0;
+        background: #ffffff !important;
+        backdrop-filter: none !important;
+        padding: 0 !important;
       }
 
       body.printing-invoice .modal-card {
-        box-shadow: none;
-        border: none;
-        max-width: 100%;
-        max-height: none;
+        box-shadow: none !important;
+        border: 1px solid #e6cfc7 !important;
+        border-radius: 12px !important;
+        max-width: 100% !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      body.printing-invoice .invoice-modern-banner {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      body.printing-invoice .invoice-meta-strip,
+      body.printing-invoice .invoice-summary-box,
+      body.printing-invoice .badge {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
 
       body.printing-invoice .invoice-actions {
@@ -726,7 +852,7 @@
       }
 
       table {
-        min-width: 820px;
+        min-width: 840px;
       }
     }
 
@@ -752,16 +878,22 @@
         grid-template-columns: repeat(2, 1fr);
       }
 
-      .crud-form {
+      .crud-form,
+      .invoice-footer-grid {
         grid-template-columns: 1fr;
       }
 
-      .invoice-head {
+      .invoice-modern-banner {
         flex-direction: column;
+        padding: 18px;
       }
 
-      .invoice-head > div:last-child {
+      .invoice-modern-banner > div:last-child {
         text-align: left !important;
+      }
+
+      .invoice-body-pad {
+        padding: 16px;
       }
 
       header {
@@ -789,7 +921,7 @@
 
       <div class="mode-switch" role="tablist" aria-label="Mode Tampilan">
         <button class="mode-btn active" id="tabGuest" type="button">Reservasi & Histori</button>
-        <button class="mode-btn" id="tabAdmin" type="button">Panel Admin</button>
+        <button class="mode-btn" id="tabAdmin" type="button">Panel Admin (CRUD)</button>
       </div>
     </div>
   </header>
@@ -825,7 +957,7 @@
       <form class="crud-form" id="reservationForm">
         <input type="hidden" id="editId" />
 
-        <!-- Fitur 1: Status Ketersediaan & Bentrok Tanggal -->
+        <!-- Status Ketersediaan & Bentrok Tanggal -->
         <div class="availability-banner availability-neutral" id="availabilityBanner">
           <span id="availabilityText">Pilih kamar dan tanggal check-in / check-out untuk mengecek ketersediaan kamar.</span>
           <span id="availabilityTag" class="badge badge-DP">Cek Otomatis</span>
@@ -847,13 +979,15 @@
         </div>
 
         <div class="field">
-          <label for="checkIn">Tanggal Check-In</label>
+          <label for="checkIn">Tanggal Menginap (Check-In)</label>
           <input type="date" id="checkIn" required />
+          <span class="field-hint" id="todayHint">Maksimal tanggal hari ini.</span>
         </div>
 
         <div class="field">
           <label for="checkOut">Tanggal Check-Out</label>
           <input type="date" id="checkOut" required />
+          <span class="field-hint">Boleh sama dengan tanggal check-in (day-use / 1 mlm).</span>
         </div>
 
         <div class="field">
@@ -884,7 +1018,7 @@
           <input type="text" id="paymentNote" placeholder="Contoh: Transfer BCA / DP 50%" />
         </div>
 
-        <!-- Fitur 2: Pratinjau Kalkulasi Tagihan & Sisa Pembayaran -->
+        <!-- Pratinjau Kalkulasi Tagihan & Sisa Pembayaran -->
         <div class="billing-preview">
           <div class="billing-item">
             <span>Estimasi Durasi</span>
@@ -920,8 +1054,8 @@
 
       <div class="export-bar">
         <div class="export-group">
-          <button type="button" class="btn btn-brown btn-sm" id="exportExcelBtn">Excel</button>
-          <button type="button" class="btn btn-primary btn-sm" id="exportPdfBtn">PDF</button>
+          <button type="button" class="btn btn-brown btn-sm" id="exportExcelBtn">Download Excel (.xls)</button>
+          <button type="button" class="btn btn-primary btn-sm" id="exportPdfBtn">Download PDF Histori</button>
         </div>
         <button type="button" class="btn btn-outline-red btn-sm" id="clearStorageBtn">Hapus LocalStorage</button>
       </div>
@@ -978,78 +1112,112 @@
     </section>
   </main>
 
-  <!-- Fitur 3: Sticky Action Bar di Mobile saat Mode Admin -->
+  <!-- Sticky Action Bar di Mobile saat Mode Admin -->
   <div class="mobile-quick-bar" id="mobileQuickBar" aria-label="Aksi Cepat Admin Mobile">
     <button type="button" class="btn btn-primary btn-sm" style="flex:1;" id="quickFocusFormBtn">+ Input / Edit Form</button>
     <button type="button" class="btn btn-brown btn-sm" style="flex:1;" id="quickScrollListBtn">Lihat Daftar</button>
   </div>
 
-  <!-- Modal Invoice Per Menginap -->
+  <!-- Modal Invoice Booking Kamar Modern -->
   <div class="modal-backdrop hidden" id="invoiceModal" role="dialog" aria-modal="true" aria-labelledby="invoiceModalTitle">
     <div class="modal-card">
-      <div class="invoice-head">
-        <div class="brand">
-          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Logo CJ Tech">
-            <rect width="48" height="48" rx="11" fill="#2A110B" stroke="#A61C1C" stroke-width="1.5"/>
-            <path d="M21 15C16.58 15 13 18.58 13 23C13 27.42 16.58 31 21 31C23.1 31 25.02 30.19 26.46 28.86" stroke="#FF6B57" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M31 15V26.5C31 29.26 28.76 31.5 26 31.5H24.5" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
-            <circle cx="35" cy="14" r="3" fill="#FF9E44"/>
-          </svg>
-          <div>
-            <div class="invoice-title" id="invoiceModalTitle">INVOICE MENGINAP</div>
-            <div style="font-size:0.78rem; color:#6e5046;">Grand Nusantara Hotel • System by <strong>CJ Tech</strong></div>
+      <div class="invoice-modern-banner">
+        <div>
+          <div class="invoice-pill">Official Room Booking Receipt</div>
+          <div class="brand" style="margin-top:2px;">
+            <svg width="42" height="42" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Logo CJ Tech">
+              <rect width="48" height="48" rx="11" fill="#2A110B" stroke="#F3B4A6" stroke-width="1.5"/>
+              <path d="M21 15C16.58 15 13 18.58 13 23C13 27.42 16.58 31 21 31C23.1 31 25.02 30.19 26.46 28.86" stroke="#FF6B57" stroke-width="3.2" stroke-linecap="round"/>
+              <path d="M31 15V26.5C31 29.26 28.76 31.5 26 31.5H24.5" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
+              <circle cx="35" cy="14" r="3" fill="#FF9E44"/>
+            </svg>
+            <div>
+              <div class="invoice-title" id="invoiceModalTitle">INVOICE BOOKING KAMAR</div>
+              <div style="font-size:0.8rem; color:#f7d9d2;">Grand Nusantara Hotel • System by <strong>CJ Tech</strong></div>
+            </div>
           </div>
         </div>
-        <div style="text-align:right; font-size:0.82rem;">
-          <div><strong id="invNumber">INV-000</strong></div>
-          <div id="invIssuedAt" style="color:#6e5046;"></div>
+        <div style="text-align:right; font-size:0.82rem; color:#ffe9e3;">
+          <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px; opacity:0.85;">Nomor Invoice</div>
+          <div style="font-size:1rem; font-weight:800; color:#fff;" id="invNumber">INV-000</div>
+          <div id="invIssuedAt" style="font-size:0.78rem; margin-top:2px;"></div>
         </div>
       </div>
 
-      <div class="invoice-grid">
-        <div class="invoice-box">
-          <div style="font-size:0.75rem; color:#8d5342; font-weight:700;">DATA TAMU</div>
-          <div id="invGuest" style="font-weight:700; color:#3b1c14; margin-top:2px;"></div>
-          <div id="invStayStatus" style="font-size:0.82rem; color:#6e5046;"></div>
-          <div id="invNote" style="font-size:0.8rem; color:#633224; margin-top:4px;"></div>
+      <div class="invoice-body-pad">
+        <div class="invoice-meta-strip">
+          <div class="invoice-meta-cell">
+            <span>Tanggal Check-In</span>
+            <strong id="invCheckIn">-</strong>
+          </div>
+          <div class="invoice-meta-cell">
+            <span>Tanggal Check-Out</span>
+            <strong id="invCheckOut">-</strong>
+          </div>
+          <div class="invoice-meta-cell">
+            <span>Durasi Menginap</span>
+            <strong id="invDuration">-</strong>
+          </div>
+          <div class="invoice-meta-cell">
+            <span>Status Pembayaran</span>
+            <div id="invPaymentBadge" style="margin-top:2px;"></div>
+          </div>
         </div>
-        <div class="invoice-box">
-          <div style="font-size:0.75rem; color:#8d5342; font-weight:700;">PERIODE MENGINAP</div>
-          <div id="invDates" style="font-weight:700; color:#3b1c14; margin-top:2px;"></div>
-          <div id="invPaymentBadge" style="margin-top:4px;"></div>
-        </div>
-      </div>
 
-      <table class="invoice-table">
-        <thead>
-          <tr>
-            <th>Deskripsi Kamar</th>
-            <th>Tarif / Malam</th>
-            <th>Durasi</th>
-            <th>Subtotal</th>
-          </tr>
-        </thead>
-        <tbody id="invTableBody"></tbody>
-      </table>
+        <div class="invoice-grid">
+          <div class="invoice-box">
+            <div class="invoice-box-label">Informasi Tamu</div>
+            <div id="invGuest" style="font-weight:700; color:#3b1c14; font-size:0.96rem;"></div>
+            <div id="invStayStatus" style="font-size:0.82rem; color:#6e5046; margin-top:2px;"></div>
+          </div>
+          <div class="invoice-box">
+            <div class="invoice-box-label">Akomodasi & Properti</div>
+            <div id="invRoomDesc" style="font-weight:700; color:#3b1c14; font-size:0.92rem;"></div>
+            <div style="font-size:0.8rem; color:#6e5046; margin-top:2px;">Grand Nusantara Hotel • Layanan Resepsionis 24 Jam</div>
+          </div>
+        </div>
 
-      <div class="invoice-summary-box">
-        <div class="invoice-summary-line">
-          <span>TOTAL TAGIHAN MENGINAP</span>
-          <strong id="invGrandTotal" style="color:#3b1c14; font-size:1rem;">Rp0</strong>
+        <div class="invoice-table-wrap">
+          <table class="invoice-table">
+            <thead>
+              <tr>
+                <th>Rincian Kamar & Akomodasi</th>
+                <th>Tarif / Malam</th>
+                <th>Durasi</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="invTableBody"></tbody>
+          </table>
         </div>
-        <div class="invoice-summary-line">
-          <span>NOMINAL DIBAYARKAN</span>
-          <strong id="invPaidAmount" style="color:#186332;">Rp0</strong>
-        </div>
-        <div class="invoice-summary-line" style="padding-top:6px; border-top:1px solid #e6cfc7;">
-          <span>SISA TAGIHAN</span>
-          <strong id="invRemainingBalance" style="color:#a61c1c; font-size:1.05rem;">Rp0</strong>
-        </div>
-      </div>
 
-      <div class="invoice-actions">
-        <button type="button" class="btn btn-primary" id="printInvoiceBtn">Cetak / Simpan PDF Invoice</button>
-        <button type="button" class="btn btn-secondary" id="closeInvoiceBtn">Tutup</button>
+        <div class="invoice-footer-grid">
+          <div class="invoice-note-box">
+            <strong>Catatan Reservasi & Kebijakan</strong>
+            <div id="invNote" style="margin-bottom:4px; color:#3b1c14;">-</div>
+            <div>Harap tunjukkan invoice ini saat proses registrasi tamu. Terima kasih telah menginap di Grand Nusantara Hotel.</div>
+          </div>
+
+          <div class="invoice-summary-box">
+            <div class="invoice-summary-line">
+              <span>TOTAL TAGIHAN</span>
+              <strong id="invGrandTotal" style="color:#3b1c14; font-size:0.95rem;">Rp0</strong>
+            </div>
+            <div class="invoice-summary-line">
+              <span>DIBAYARKAN</span>
+              <strong id="invPaidAmount" style="color:#186332;">Rp0</strong>
+            </div>
+            <div class="invoice-summary-line" style="padding-top:7px; border-top:1px solid #e6cfc7;">
+              <span>SISA TAGIHAN</span>
+              <strong id="invRemainingBalance" style="color:#a61c1c; font-size:1.08rem;">Rp0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="invoice-actions">
+          <button type="button" class="btn btn-primary" id="printInvoiceBtn">Print / Simpan PDF Invoice</button>
+          <button type="button" class="btn btn-secondary" id="closeInvoiceBtn">Tutup</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1059,7 +1227,7 @@
   </footer>
 
   <script>
-    const STORAGE_KEY = "cjtech_hotel_reservations_v3";
+    const STORAGE_KEY = "cjtech_hotel_reservations_v4";
 
     const roomRates = {
       "Deluxe King — 201": 750000,
@@ -1072,6 +1240,32 @@
     let isAdminMode = false;
     let currentPage = 1;
     let pageSize = 5;
+
+    function getTodayISO() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function applyDateConstraints() {
+      const today = getTodayISO();
+      const checkInEl = document.getElementById("checkIn");
+      const checkOutEl = document.getElementById("checkOut");
+      const hintEl = document.getElementById("todayHint");
+
+      checkInEl.max = today;
+      if (hintEl) {
+        hintEl.textContent = `Tidak boleh lewat dari hari ini (${today}).`;
+      }
+
+      if (checkInEl.value) {
+        checkOutEl.min = checkInEl.value;
+      } else {
+        checkOutEl.removeAttribute("min");
+      }
+    }
 
     function loadReservations() {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -1105,7 +1299,7 @@
       const end = new Date(checkOut + "T00:00:00");
       const diffMs = end - start;
       const days = Math.round(diffMs / (1000 * 60 * 60 * 24));
-      return days > 0 ? days : 1;
+      return days >= 0 ? Math.max(1, days) : 1;
     }
 
     function getBillingInfo(item) {
@@ -1129,23 +1323,38 @@
       }).format(amount);
     }
 
-    /* Fitur 1: Deteksi Bentrok Tanggal Kamar */
+    /* Cek apakah check-in masih di masa depan (lebih besar dari hari ini) */
+    function isFutureCheckIn(checkInStr) {
+      if (!checkInStr) return false;
+      return checkInStr > getTodayISO();
+    }
+
+    /* Cek apakah reservasi sudah check-out */
+    function isCheckedOut(item) {
+      return item.stayStatus === "Selesai (Check-Out)";
+    }
+
+    /* Deteksi Bentrok Tanggal Kamar */
     function checkRoomConflict(roomType, checkIn, checkOut, ignoreId = "") {
-      if (!roomType || !checkIn || !checkOut || checkOut <= checkIn) return null;
+      if (!roomType || !checkIn || !checkOut || checkOut < checkIn) return null;
       const newStart = new Date(checkIn + "T00:00:00").getTime();
-      const newEnd = new Date(checkOut + "T00:00:00").getTime();
+      const newEndDay = new Date(checkOut + "T00:00:00").getTime();
+      const newEnd = newEndDay === newStart ? newStart + 86400000 : newEndDay;
 
       return reservations.find((r) => {
         if (r.id === ignoreId) return false;
         if (r.roomType !== roomType) return false;
         if (r.stayStatus === "Selesai (Check-Out)") return false;
         const exStart = new Date(r.checkIn + "T00:00:00").getTime();
-        const exEnd = new Date(r.checkOut + "T00:00:00").getTime();
+        const exEndDay = new Date(r.checkOut + "T00:00:00").getTime();
+        const exEnd = exEndDay === exStart ? exStart + 86400000 : exEndDay;
         return newStart < exEnd && newEnd > exStart;
       }) || null;
     }
 
     function updateAvailabilityBanner() {
+      applyDateConstraints();
+      const today = getTodayISO();
       const roomType = document.getElementById("roomType").value;
       const checkIn = document.getElementById("checkIn").value;
       const checkOut = document.getElementById("checkOut").value;
@@ -1159,15 +1368,23 @@
 
       if (!checkIn || !checkOut) {
         banner.classList.add("availability-neutral");
-        textEl.textContent = "Pilih tanggal check-in dan check-out untuk mengecek ketersediaan kamar.";
+        textEl.textContent = "Pilih tanggal check-in (maks. hari ini) dan check-out untuk mengecek ketersediaan kamar.";
         tagEl.className = "badge badge-DP";
         tagEl.textContent = "Menunggu Tanggal";
         return;
       }
 
-      if (checkOut <= checkIn) {
+      if (checkIn > today) {
         banner.classList.add("availability-conflict");
-        textEl.textContent = "Tanggal Check-Out harus lebih besar dari tanggal Check-In.";
+        textEl.textContent = `Tanggal menginap (${checkIn}) tidak boleh lewat dari tanggal hari ini (${today}).`;
+        tagEl.className = "badge badge-Belum\\ Bayar";
+        tagEl.textContent = "Melewati Hari Ini";
+        return;
+      }
+
+      if (checkOut < checkIn) {
+        banner.classList.add("availability-conflict");
+        textEl.textContent = "Tanggal Check-Out tidak boleh lebih awal dari tanggal Check-In.";
         tagEl.className = "badge badge-Belum\\ Bayar";
         tagEl.textContent = "Tanggal Tidak Valid";
         return;
@@ -1187,7 +1404,7 @@
       }
     }
 
-    /* Fitur 2: Sinkronisasi Kalkulasi Tagihan & Sisa Pembayaran di Form */
+    /* Sinkronisasi Kalkulasi Tagihan & Sisa Pembayaran di Form */
     function syncBillingPreview() {
       const roomType = document.getElementById("roomType").value;
       const checkIn = document.getElementById("checkIn").value;
@@ -1287,10 +1504,25 @@
       renderList();
     };
 
-    /* Fitur 3: Aksi Cepat Ubah Status Menginap & Pelunasan */
-    window.quickSetStay = function (id, nextStayStatus) {
+    /* Aksi Cepat Check-In (diblokir jika tanggal check-in masih di masa depan) */
+    window.quickCheckIn = function (id) {
+      const target = reservations.find((r) => r.id === id);
+      if (!target) return;
+      if (isFutureCheckIn(target.checkIn)) {
+        alert(`Check-In belum dapat dilakukan karena tanggal menginap (${target.checkIn}) masih di masa depan.`);
+        return;
+      }
       reservations = reservations.map((item) =>
-        item.id === id ? { ...item, stayStatus: nextStayStatus } : item
+        item.id === id ? { ...item, stayStatus: "Aktif Menginap" } : item
+      );
+      saveReservations();
+      renderStats();
+      renderList();
+    };
+
+    window.quickCheckOut = function (id) {
+      reservations = reservations.map((item) =>
+        item.id === id ? { ...item, stayStatus: "Selesai (Check-Out)" } : item
       );
       saveReservations();
       renderStats();
@@ -1298,6 +1530,8 @@
     };
 
     window.quickMarkPaid = function (id) {
+      const target = reservations.find((r) => r.id === id);
+      if (!target || isCheckedOut(target)) return;
       reservations = reservations.map((item) => {
         if (item.id !== id) return item;
         const { total } = getBillingInfo(item);
@@ -1340,6 +1574,15 @@
         .map((item) => {
           const { nights, total, balance } = getBillingInfo(item);
           const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
+          const checkedOut = isCheckedOut(item);
+          const futureCheckIn = isFutureCheckIn(item.checkIn);
+
+          let stayActionBtn = "";
+          if (item.stayStatus === "Aktif Menginap") {
+            stayActionBtn = `<button type="button" class="btn btn-secondary btn-sm" onclick="quickCheckOut('${item.id}')">Check-Out</button>`;
+          } else if (!checkedOut) {
+            stayActionBtn = `<button type="button" class="btn btn-secondary btn-sm ${futureCheckIn ? "is-disabled" : ""}" ${futureCheckIn ? 'disabled title="Check-in belum tersedia karena jadwal masih lama"' : ""} onclick="quickCheckIn('${item.id}')">Check-In</button>`;
+          }
 
           return `
             <tr>
@@ -1363,14 +1606,10 @@
               </td>
               <td class="admin-col ${isAdminMode ? "" : "hidden"}">
                 <div class="action-btns">
-                  <button type="button" class="btn btn-brown btn-sm" onclick="startEdit('${item.id}')">Edit</button>
+                  <button type="button" class="btn btn-brown btn-sm ${checkedOut ? "is-disabled" : ""}" ${checkedOut ? 'disabled title="Data yang sudah check-out tidak dapat diedit"' : ""} onclick="startEdit('${item.id}')">Edit</button>
+                  ${stayActionBtn}
                   ${
-                    item.stayStatus !== "Aktif Menginap"
-                      ? `<button type="button" class="btn btn-secondary btn-sm" onclick="quickSetStay('${item.id}', 'Aktif Menginap')">Check-In</button>`
-                      : `<button type="button" class="btn btn-secondary btn-sm" onclick="quickSetStay('${item.id}', 'Selesai (Check-Out)')">Check-Out</button>`
-                  }
-                  ${
-                    balance > 0
+                    balance > 0 && !checkedOut
                       ? `<button type="button" class="btn btn-primary btn-sm" onclick="quickMarkPaid('${item.id}')">Lunasi</button>`
                       : ""
                   }
@@ -1385,6 +1624,15 @@
         .map((item) => {
           const { nights, total, paid, balance } = getBillingInfo(item);
           const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
+          const checkedOut = isCheckedOut(item);
+          const futureCheckIn = isFutureCheckIn(item.checkIn);
+
+          let mobileStayBtn = "";
+          if (item.stayStatus === "Aktif Menginap") {
+            mobileStayBtn = `<button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="quickCheckOut('${item.id}')">Tandai Check-Out</button>`;
+          } else if (!checkedOut) {
+            mobileStayBtn = `<button type="button" class="btn btn-secondary btn-sm ${futureCheckIn ? "is-disabled" : ""}" style="flex:1;" ${futureCheckIn ? "disabled" : ""} onclick="quickCheckIn('${item.id}')">${futureCheckIn ? "Check-In Belum Dibuka" : "Tandai Check-In"}</button>`;
+          }
 
           return `
             <div class="res-mobile-card">
@@ -1416,21 +1664,17 @@
                 <button type="button" class="btn btn-outline-red btn-sm" style="flex:1;" onclick="openInvoice('${item.id}')">Invoice</button>
                 ${
                   isAdminMode
-                    ? `<button type="button" class="btn btn-brown btn-sm" style="flex:1;" onclick="startEdit('${item.id}')">Edit Data</button>`
+                    ? `<button type="button" class="btn btn-brown btn-sm ${checkedOut ? "is-disabled" : ""}" style="flex:1;" ${checkedOut ? "disabled" : ""} onclick="startEdit('${item.id}')">${checkedOut ? "Terkunci (Check-Out)" : "Edit Data"}</button>`
                     : ""
                 }
               </div>
               ${
-                isAdminMode
+                isAdminMode && (mobileStayBtn || (balance > 0 && !checkedOut))
                   ? `
                     <div class="quick-status-row">
+                      ${mobileStayBtn}
                       ${
-                        item.stayStatus !== "Aktif Menginap"
-                          ? `<button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="quickSetStay('${item.id}', 'Aktif Menginap')">Tandai Check-In</button>`
-                          : `<button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="quickSetStay('${item.id}', 'Selesai (Check-Out)')">Tandai Check-Out</button>`
-                      }
-                      ${
-                        balance > 0
+                        balance > 0 && !checkedOut
                           ? `<button type="button" class="btn btn-primary btn-sm" style="flex:1;" onclick="quickMarkPaid('${item.id}')">Tandai Lunas</button>`
                           : ""
                       }
@@ -1537,16 +1781,22 @@
       const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
 
       document.getElementById("invNumber").textContent = `INV-${item.id}`;
-      document.getElementById("invIssuedAt").textContent = `Terbit: ${new Date().toLocaleDateString("id-ID")}`;
+      document.getElementById("invIssuedAt").textContent = `Terbit: ${new Date().toLocaleDateString("id-ID", { dateStyle: "medium" })}`;
+      document.getElementById("invCheckIn").textContent = item.checkIn;
+      document.getElementById("invCheckOut").textContent = item.checkOut;
+      document.getElementById("invDuration").textContent = `${nights} Malam`;
       document.getElementById("invGuest").textContent = item.guestName;
       document.getElementById("invStayStatus").textContent = `Status Menginap: ${item.stayStatus}`;
-      document.getElementById("invNote").textContent = item.paymentNote ? `Catatan: ${item.paymentNote}` : "";
-      document.getElementById("invDates").textContent = `${item.checkIn} s/d ${item.checkOut} (${nights} Malam)`;
-      document.getElementById("invPaymentBadge").innerHTML = `<span class="badge ${badgeClass}">Pembayaran: ${item.paymentStatus}</span>`;
+      document.getElementById("invRoomDesc").textContent = item.roomType;
+      document.getElementById("invNote").textContent = item.paymentNote ? `Catatan: ${item.paymentNote}` : "Tidak ada catatan khusus.";
+      document.getElementById("invPaymentBadge").innerHTML = `<span class="badge ${badgeClass}">${item.paymentStatus}</span>`;
 
       document.getElementById("invTableBody").innerHTML = `
         <tr>
-          <td>Akomodasi Kamar (${item.roomType})</td>
+          <td>
+            <div style="font-weight:700; color:#3b1c14;">${item.roomType}</div>
+            <div style="font-size:0.78rem; color:#6e5046;">Periode ${item.checkIn} s/d ${item.checkOut}</div>
+          </td>
           <td>${formatRupiah(rate)}</td>
           <td>${nights} Malam</td>
           <td><strong>${formatRupiah(total)}</strong></td>
@@ -1600,6 +1850,11 @@
       const target = reservations.find((r) => r.id === id);
       if (!target) return;
 
+      if (isCheckedOut(target)) {
+        alert("Reservasi yang sudah Selesai (Check-Out) tidak dapat diedit.");
+        return;
+      }
+
       const { paid } = getBillingInfo(target);
       setMode(true);
       document.getElementById("editId").value = target.id;
@@ -1622,6 +1877,7 @@
 
     document.getElementById("reservationForm").addEventListener("submit", (e) => {
       e.preventDefault();
+      const today = getTodayISO();
       const editId = document.getElementById("editId").value;
       const guestName = document.getElementById("guestName").value.trim();
       const roomType = document.getElementById("roomType").value;
@@ -1632,8 +1888,27 @@
       const stayStatus = document.getElementById("stayStatus").value;
       const paymentNote = document.getElementById("paymentNote").value.trim();
 
-      if (checkOut <= checkIn) {
-        alert("Tanggal Check-Out harus setelah tanggal Check-In.");
+      if (editId) {
+        const existing = reservations.find((r) => r.id === editId);
+        if (existing && isCheckedOut(existing)) {
+          alert("Reservasi yang sudah check-out tidak dapat diedit.");
+          resetForm();
+          return;
+        }
+      }
+
+      if (checkIn > today) {
+        alert(`Tanggal menginap (${checkIn}) tidak boleh lewat dari tanggal hari ini (${today}).`);
+        return;
+      }
+
+      if (checkOut < checkIn) {
+        alert("Tanggal Check-Out tidak boleh lebih awal dari tanggal Check-In.");
+        return;
+      }
+
+      if (stayStatus === "Aktif Menginap" && checkIn > today) {
+        alert("Status Aktif Menginap tidak dapat dipilih untuk tanggal check-in di masa depan.");
         return;
       }
 
@@ -1675,6 +1950,16 @@
 
     ["roomType", "checkIn", "checkOut"].forEach((id) => {
       document.getElementById(id).addEventListener("change", () => {
+        if (id === "checkIn") {
+          const checkInEl = document.getElementById("checkIn");
+          const checkOutEl = document.getElementById("checkOut");
+          if (checkInEl.value) {
+            checkOutEl.min = checkInEl.value;
+            if (checkOutEl.value && checkOutEl.value < checkInEl.value) {
+              checkOutEl.value = checkInEl.value;
+            }
+          }
+        }
         updateAvailabilityBanner();
         syncBillingPreview();
       });
@@ -1732,6 +2017,7 @@
       renderList();
     });
 
+    applyDateConstraints();
     updateAvailabilityBanner();
     syncBillingPreview();
     renderStats();
