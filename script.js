@@ -25,7 +25,6 @@ function getOriginalCheckInMin(editId) {
   if (!editId) return "";
   const existing = reservations.find((r) => r.id === editId);
   if (!existing || !existing.checkIn) return "";
-  // Tanggal check-in saat edit boleh maju (hingga hari ini), tapi tidak boleh mundur dari tanggal awal
   return existing.checkIn > today ? today : existing.checkIn;
 }
 
@@ -52,6 +51,9 @@ function applyDateConstraints() {
 
   if (checkInEl.value) {
     checkOutEl.min = checkInEl.value;
+    if (checkOutEl.value && checkOutEl.value < checkInEl.value) {
+      checkOutEl.value = checkInEl.value;
+    }
   } else {
     checkOutEl.removeAttribute("min");
   }
@@ -119,18 +121,15 @@ function formatRupiah(amount) {
   }).format(amount);
 }
 
-/* Cek apakah check-in masih di masa depan (lebih besar dari hari ini) */
 function isFutureCheckIn(checkInStr) {
   if (!checkInStr) return false;
   return checkInStr > getTodayISO();
 }
 
-/* Cek apakah reservasi sudah check-out */
 function isCheckedOut(item) {
   return item.stayStatus === "Selesai (Check-Out)";
 }
 
-/* Deteksi Bentrok Tanggal Kamar */
 function checkRoomConflict(roomType, checkIn, checkOut, ignoreId = "") {
   if (!roomType || !checkIn || !checkOut || checkOut < checkIn) return null;
   const newStart = new Date(checkIn + "T00:00:00").getTime();
@@ -209,7 +208,11 @@ function updateAvailabilityBanner() {
   }
 }
 
-/* Sinkronisasi Kalkulasi Tagihan & Sisa Pembayaran di Form */
+function handleScheduleChange() {
+  updateAvailabilityBanner();
+  syncBillingPreview();
+}
+
 function syncBillingPreview() {
   const roomType = document.getElementById("roomType").value;
   const checkIn = document.getElementById("checkIn").value;
@@ -304,13 +307,12 @@ function renderPagination(totalItems) {
   pagesEl.innerHTML = buttonsHtml;
 }
 
-window.goToPage = function (page) {
+function goToPage(page) {
   currentPage = page;
   renderList();
-};
+}
 
-/* Aksi Cepat Check-In (diblokir jika tanggal check-in masih di masa depan) */
-window.quickCheckIn = function (id) {
+function quickCheckIn(id) {
   const target = reservations.find((r) => r.id === id);
   if (!target) return;
   if (isFutureCheckIn(target.checkIn)) {
@@ -323,9 +325,9 @@ window.quickCheckIn = function (id) {
   saveReservations();
   renderStats();
   renderList();
-};
+}
 
-window.quickCheckOut = function (id) {
+function quickCheckOut(id) {
   const target = reservations.find((r) => r.id === id);
   if (!target) return;
   if (!canCheckOut(target)) {
@@ -341,9 +343,9 @@ window.quickCheckOut = function (id) {
   saveReservations();
   renderStats();
   renderList();
-};
+}
 
-window.quickMarkPaid = function (id) {
+function quickMarkPaid(id) {
   const target = reservations.find((r) => r.id === id);
   if (!target || isCheckedOut(target)) return;
   reservations = reservations.map((item) => {
@@ -354,7 +356,7 @@ window.quickMarkPaid = function (id) {
   saveReservations();
   renderStats();
   renderList();
-};
+}
 
 function renderList() {
   const filtered = getFilteredData();
@@ -589,7 +591,7 @@ function exportPdfHistory() {
   setTimeout(() => document.body.classList.remove("printing-report"), 500);
 }
 
-window.openInvoice = function (id) {
+function openInvoice(id) {
   const item = reservations.find((r) => r.id === id);
   if (!item) return;
 
@@ -623,10 +625,22 @@ window.openInvoice = function (id) {
   document.getElementById("invRemainingBalance").textContent = formatRupiah(balance);
 
   document.getElementById("invoiceModal").classList.remove("hidden");
-};
+}
 
 function closeInvoiceModal() {
   document.getElementById("invoiceModal").classList.add("hidden");
+}
+
+function handleBackdropClick(event) {
+  if (event.target.id === "invoiceModal") {
+    closeInvoiceModal();
+  }
+}
+
+function printInvoice() {
+  document.body.classList.add("printing-invoice");
+  window.print();
+  setTimeout(() => document.body.classList.remove("printing-invoice"), 500);
 }
 
 function setMode(admin) {
@@ -662,7 +676,7 @@ function resetForm() {
   syncBillingPreview();
 }
 
-window.startEdit = function (id) {
+function startEdit(id) {
   const target = reservations.find((r) => r.id === id);
   if (!target) return;
 
@@ -689,9 +703,9 @@ window.startEdit = function (id) {
   updateAvailabilityBanner();
   syncBillingPreview();
   document.getElementById("adminSection").scrollIntoView({ behavior: "smooth" });
-};
+}
 
-document.getElementById("reservationForm").addEventListener("submit", (e) => {
+function submitReservation(e) {
   e.preventDefault();
   const today = getTodayISO();
   const editId = document.getElementById("editId").value;
@@ -779,76 +793,22 @@ document.getElementById("reservationForm").addEventListener("submit", (e) => {
   renderStats();
   renderList();
   resetForm();
-});
+}
 
-["roomType", "checkIn", "checkOut"].forEach((id) => {
-  document.getElementById(id).addEventListener("change", () => {
-    if (id === "checkIn") {
-      const checkInEl = document.getElementById("checkIn");
-      const checkOutEl = document.getElementById("checkOut");
-      if (checkInEl.value) {
-        checkOutEl.min = checkInEl.value;
-        if (checkOutEl.value && checkOutEl.value < checkInEl.value) {
-          checkOutEl.value = checkInEl.value;
-        }
-      }
-    }
-    updateAvailabilityBanner();
-    syncBillingPreview();
-  });
-});
-
-["paymentStatus", "paidAmount"].forEach((id) => {
-  document.getElementById(id).addEventListener("input", syncBillingPreview);
-  document.getElementById(id).addEventListener("change", syncBillingPreview);
-});
-
-document.getElementById("quickFocusFormBtn").addEventListener("click", () => {
-  document.getElementById("adminSection").scrollIntoView({ behavior: "smooth" });
-});
-
-document.getElementById("quickScrollListBtn").addEventListener("click", () => {
-  document.getElementById("listSection").scrollIntoView({ behavior: "smooth" });
-});
-
-document.getElementById("cancelEditBtn").addEventListener("click", resetForm);
-document.getElementById("tabGuest").addEventListener("click", () => setMode(false));
-document.getElementById("tabAdmin").addEventListener("click", () => setMode(true));
-document.getElementById("clearStorageBtn").addEventListener("click", clearLocalStorageData);
-document.getElementById("exportExcelBtn").addEventListener("click", exportExcelHistory);
-document.getElementById("exportPdfBtn").addEventListener("click", exportPdfHistory);
-document.getElementById("closeInvoiceBtn").addEventListener("click", closeInvoiceModal);
-
-document.getElementById("printInvoiceBtn").addEventListener("click", () => {
-  document.body.classList.add("printing-invoice");
-  window.print();
-  setTimeout(() => document.body.classList.remove("printing-invoice"), 500);
-});
-
-document.getElementById("invoiceModal").addEventListener("click", (e) => {
-  if (e.target.id === "invoiceModal") closeInvoiceModal();
-});
-
-document.getElementById("searchInput").addEventListener("input", () => {
+function handleFilterChange() {
   currentPage = 1;
   renderList();
-});
+}
 
-document.getElementById("filterPayment").addEventListener("change", () => {
+function handlePageSizeChange(value) {
+  pageSize = Number(value) || 5;
   currentPage = 1;
   renderList();
-});
+}
 
-document.getElementById("filterStay").addEventListener("change", () => {
-  currentPage = 1;
-  renderList();
-});
-
-document.getElementById("pageSizeSelect").addEventListener("change", (e) => {
-  pageSize = Number(e.target.value) || 5;
-  currentPage = 1;
-  renderList();
-});
+function scrollToSection(sectionId) {
+  document.getElementById(sectionId).scrollIntoView({ behavior: "smooth" });
+}
 
 applyDateConstraints();
 updateAvailabilityBanner();
