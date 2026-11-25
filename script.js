@@ -855,4 +855,3 @@ updateAvailabilityBanner();
 syncBillingPreview();
 renderStats();
 renderList();
-```[cite: 1]
