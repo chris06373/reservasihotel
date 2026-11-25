@@ -24,8 +24,8 @@
       </div>
 
       <div class="mode-switch" role="tablist" aria-label="Mode Tampilan">
-        <button class="mode-btn active" id="tabGuest" type="button">Reservasi & Histori</button>
-        <button class="mode-btn" id="tabAdmin" type="button">Panel Admin</button>
+        <button class="mode-btn active" id="tabGuest" type="button" onclick="setMode(false)">Reservasi & Histori</button>
+        <button class="mode-btn" id="tabAdmin" type="button" onclick="setMode(true)">Panel Admin</button>
       </div>
     </div>
   </header>
@@ -58,7 +58,7 @@
         <span class="admin-badge">ADMIN • CREATE & UPDATE ONLY</span>
       </div>
 
-      <form class="crud-form" id="reservationForm">
+      <form class="crud-form" id="reservationForm" onsubmit="submitReservation(event)">
         <input type="hidden" id="editId" />
 
         <!-- Status Ketersediaan & Bentrok Tanggal -->
@@ -158,10 +158,9 @@
 
       <div class="export-bar">
         <div class="export-group">
-          <button type="button" class="btn btn-brown btn-sm" id="exportExcelBtn">Download Excel (.xls)</button>
-          <button type="button" class="btn btn-primary btn-sm" id="exportPdfBtn">Download PDF Histori</button>
-        </div>
-        <button type="button" class="btn btn-outline-red btn-sm" id="clearStorageBtn">Hapus LocalStorage</button>
+          <button type="button" class="btn btn-brown btn-sm" id="exportExcelBtn" onclick="exportExcelHistory()">Excel</button>
+          <button type="button" class="btn btn-primary btn-sm" id="exportPdfBtn" onclick="exportPdfHistory()">PDF</button>
+          <button type="button" class="btn btn-outline-red btn-sm" id="clearStorageBtn" onclick="clearLocalStorageData()">Hapus LocalStorage</button>
       </div>
 
       <div class="toolbar">
