@@ -1310,12 +1310,31 @@
       }
     }
 
+    function sanitizeReservationItem(item) {
+      if (!item || typeof item !== "object") return null;
+      if (!item.id || !item.guestName || !item.roomType || !item.checkIn || !item.checkOut) {
+        return null;
+      }
+      return {
+        id: String(item.id),
+        guestName: String(item.guestName),
+        roomType: String(item.roomType),
+        checkIn: String(item.checkIn),
+        checkOut: String(item.checkOut),
+        paymentStatus: item.paymentStatus || "Belum Bayar",
+        paidAmount: Number(item.paidAmount || 0),
+        stayStatus: item.stayStatus || "Akan Datang",
+        paymentNote: item.paymentNote ? String(item.paymentNote) : ""
+      };
+    }
+
     function loadReservations() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) return [];
       try {
         const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed : [];
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map(sanitizeReservationItem).filter(Boolean);
       } catch {
         return [];
       }
@@ -1380,27 +1399,36 @@
       return item.paymentStatus === "Lunas" && balance === 0;
     }
 
-    /* Deteksi Bentrok Tanggal Kamar (hanya jika sudah ada booking) */
+    function isValidExistingBooking(record, ignoreId = "") {
+      if (!record || typeof record !== "object") return false;
+      if (!record.id || record.id === ignoreId) return false;
+      if (!record.guestName || !record.roomType || !record.checkIn || !record.checkOut) return false;
+      if (record.stayStatus === "Selesai (Check-Out)") return false;
+      return reservations.some((item) => item && item.id === record.id);
+    }
+
+    /* Deteksi Bentrok Tanggal Kamar (hanya jika data bentrok memang ada di reservations) */
     function checkRoomConflict(roomType, checkIn, checkOut, ignoreId = "") {
       if (!Array.isArray(reservations) || reservations.length === 0) return null;
       if (!roomType || !checkIn || !checkOut || checkOut < checkIn) return null;
-
-      const hasOtherBookings = reservations.some((r) => r.id !== ignoreId);
-      if (!hasOtherBookings) return null;
 
       const newStart = new Date(checkIn + "T00:00:00").getTime();
       const newEndDay = new Date(checkOut + "T00:00:00").getTime();
       const newEnd = newEndDay === newStart ? newStart + 86400000 : newEndDay;
 
-      return reservations.find((r) => {
-        if (r.id === ignoreId) return false;
+      const matched = reservations.find((r) => {
+        if (!isValidExistingBooking(r, ignoreId)) return false;
         if (r.roomType !== roomType) return false;
-        if (r.stayStatus === "Selesai (Check-Out)") return false;
+
         const exStart = new Date(r.checkIn + "T00:00:00").getTime();
         const exEndDay = new Date(r.checkOut + "T00:00:00").getTime();
         const exEnd = exEndDay === exStart ? exStart + 86400000 : exEndDay;
+
+        if (Number.isNaN(exStart) || Number.isNaN(exEnd)) return false;
         return newStart < exEnd && newEnd > exStart;
-      }) || null;
+      });
+
+      return isValidExistingBooking(matched, ignoreId) ? matched : null;
     }
 
     function updateAvailabilityBanner() {
@@ -1441,7 +1469,7 @@
         return;
       }
 
-      if (reservations.length === 0) {
+      if (!Array.isArray(reservations) || reservations.length === 0) {
         banner.classList.add("availability-ok");
         textEl.textContent = `Belum ada booking tersimpan. ${roomType} tersedia untuk periode ${checkIn} s/d ${checkOut}.`;
         tagEl.className = "badge badge-Lunas";
@@ -1450,7 +1478,7 @@
       }
 
       const conflict = checkRoomConflict(roomType, checkIn, checkOut, editId);
-      if (conflict) {
+      if (conflict && isValidExistingBooking(conflict, editId)) {
         banner.classList.add("availability-conflict");
         textEl.textContent = `Bentrok dengan ${conflict.id} (${conflict.guestName}, ${conflict.checkIn} s/d ${conflict.checkOut}).`;
         tagEl.className = "badge badge-Belum\\ Bayar";
@@ -2021,7 +2049,7 @@
       }
 
       const conflict = checkRoomConflict(roomType, checkIn, checkOut, editId);
-      if (conflict) {
+      if (conflict && isValidExistingBooking(conflict, editId)) {
         const proceed = confirm(
           `Peringatan: ${roomType} bentrok dengan reservasi ${conflict.id} (${conflict.guestName}, ${conflict.checkIn} s/d ${conflict.checkOut}). Tetap simpan data?`
         );
