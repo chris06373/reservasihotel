@@ -1384,14 +1384,9 @@
       return item.paymentStatus === "Lunas" && balance === 0;
     }
 
-    /* Deteksi Bentrok Tanggal Kamar (hanya jika sudah ada booking) */
+    /* Deteksi Bentrok Tanggal Kamar */
     function checkRoomConflict(roomType, checkIn, checkOut, ignoreId = "") {
-      if (!Array.isArray(reservations) || reservations.length === 0) return null;
       if (!roomType || !checkIn || !checkOut || checkOut < checkIn) return null;
-
-      const hasOtherBookings = reservations.some((r) => r.id !== ignoreId);
-      if (!hasOtherBookings) return null;
-
       const newStart = new Date(checkIn + "T00:00:00").getTime();
       const newEndDay = new Date(checkOut + "T00:00:00").getTime();
       const newEnd = newEndDay === newStart ? newStart + 86400000 : newEndDay;
@@ -1442,15 +1437,6 @@
         textEl.textContent = "Tanggal Check-Out tidak boleh lebih awal dari tanggal Check-In.";
         tagEl.className = "badge badge-Belum\\ Bayar";
         tagEl.textContent = "Tanggal Tidak Valid";
-        return;
-      }
-
-      // Jika belum ada data booking sama sekali, lewati cek bentrok
-      if (reservations.length === 0) {
-        banner.classList.add("availability-ok");
-        textEl.textContent = `Belum ada booking tersimpan. ${roomType} tersedia untuk periode ${checkIn} s/d ${checkOut}.`;
-        tagEl.className = "badge badge-Lunas";
-        tagEl.textContent = "Tersedia";
         return;
       }
 
