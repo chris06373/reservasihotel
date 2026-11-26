@@ -992,8 +992,7 @@
     <!-- Form CRUD Admin (Create & Update saja, tanpa Delete data satuan) -->
     <section class="card hidden" id="adminSection" aria-label="Form Admin CRUD">
       <div class="card-header">
-        <h2 class="card-title" id="formHeading">Tambah Reservasi Baru (Create)</h2>
-        <span class="admin-badge">ADMIN • CREATE & UPDATE ONLY</span>
+        <h2 class="card-title" id="formHeading">Tambah Reservasi Baru</h2>
       </div>
 
       <form class="crud-form" id="reservationForm">
@@ -1265,7 +1264,7 @@
   </div>
 
   <footer>
-    <strong>CJ Tech</strong> — Software Development • Sistem Manajemen Reservasi Hotel Responsif (Tablet & Mobile)
+    <strong>CJ Tech</strong> — Software Development • Sistem Manajemen Reservasi Hotel Responsif
   </footer>
 
   <script>
@@ -1297,7 +1296,6 @@
       const checkOutEl = document.getElementById("checkOut");
       const hintEl = document.getElementById("todayHint");
 
-      // Tanggal check-in minimal hari ini (boleh hari ini atau ke depan, tidak boleh mundur)
       checkInEl.min = today;
       checkInEl.removeAttribute("max");
 
@@ -1368,26 +1366,28 @@
       }).format(amount);
     }
 
-    /* Cek apakah check-in masih di masa depan (lebih besar dari hari ini) */
     function isFutureCheckIn(checkInStr) {
       if (!checkInStr) return false;
       return checkInStr > getTodayISO();
     }
 
-    /* Cek apakah reservasi sudah check-out */
     function isCheckedOut(item) {
       return item.stayStatus === "Selesai (Check-Out)";
     }
 
-    /* Cek apakah reservasi sudah lunas sepenuhnya dan bisa check-out */
     function canCheckOut(item) {
       const { balance } = getBillingInfo(item);
       return item.paymentStatus === "Lunas" && balance === 0;
     }
 
-    /* Deteksi Bentrok Tanggal Kamar */
+    /* Deteksi Bentrok Tanggal Kamar (hanya jika sudah ada booking) */
     function checkRoomConflict(roomType, checkIn, checkOut, ignoreId = "") {
+      if (!Array.isArray(reservations) || reservations.length === 0) return null;
       if (!roomType || !checkIn || !checkOut || checkOut < checkIn) return null;
+
+      const hasOtherBookings = reservations.some((r) => r.id !== ignoreId);
+      if (!hasOtherBookings) return null;
+
       const newStart = new Date(checkIn + "T00:00:00").getTime();
       const newEndDay = new Date(checkOut + "T00:00:00").getTime();
       const newEnd = newEndDay === newStart ? newStart + 86400000 : newEndDay;
@@ -1441,6 +1441,14 @@
         return;
       }
 
+      if (reservations.length === 0) {
+        banner.classList.add("availability-ok");
+        textEl.textContent = `Belum ada booking tersimpan. ${roomType} tersedia untuk periode ${checkIn} s/d ${checkOut}.`;
+        tagEl.className = "badge badge-Lunas";
+        tagEl.textContent = "Tersedia";
+        return;
+      }
+
       const conflict = checkRoomConflict(roomType, checkIn, checkOut, editId);
       if (conflict) {
         banner.classList.add("availability-conflict");
@@ -1455,7 +1463,6 @@
       }
     }
 
-    /* Sinkronisasi Kalkulasi Tagihan & Sisa Pembayaran di Form */
     function syncBillingPreview() {
       const roomType = document.getElementById("roomType").value;
       const checkIn = document.getElementById("checkIn").value;
@@ -1557,7 +1564,6 @@
       renderList();
     };
 
-    /* Aksi Cepat Check-In (diblokir jika tanggal check-in masih di masa depan) */
     window.quickCheckIn = function (id) {
       const target = reservations.find((r) => r.id === id);
       if (!target) return;
@@ -1573,7 +1579,6 @@
       renderList();
     };
 
-    /* Aksi Cepat Check-Out (hanya jika sudah lunas) */
     window.quickCheckOut = function (id) {
       const target = reservations.find((r) => r.id === id);
       if (!target) return;
@@ -1624,7 +1629,7 @@
       if (pageItems.length === 0) {
         const emptyMsg =
           reservations.length === 0
-            ? "Belum ada data reservasi. Gunakan menu Panel Admin (CRUD) untuk menambah data."
+            ? "Belum ada data reservasi."
             : "Tidak ada data reservasi yang cocok dengan filter.";
 
         tbody.innerHTML = `<tr><td colspan="${colSpanCount}" style="text-align:center; padding:24px; color:#6e5046;">${emptyMsg}</td></tr>`;
@@ -1827,11 +1832,9 @@
       URL.revokeObjectURL(url);
     }
 
-    /* Hitung skala otomatis agar konten pas dalam 1 lembar A4 */
     function fitSingleSheetPrint(targetSelector, baseScale = 0.92) {
       const el = document.querySelector(targetSelector);
       if (!el) return;
-      // Tinggi efektif area cetak A4 portrait dengan margin 8mm (~1040px pada 96dpi)
       const maxPrintableHeightPx = 1020;
       const rect = el.getBoundingClientRect();
       const currentHeight = el.scrollHeight || rect.height || 1000;
@@ -1901,7 +1904,7 @@
       document.getElementById("tabAdmin").classList.toggle("active", admin);
       document.getElementById("adminSection").classList.toggle("hidden", !admin);
       document.getElementById("modeIndicator").textContent = admin
-        ? "Mode Admin (Create & Update)"
+        ? "Mode Admin (CRUD)"
         : "Mode Tamu / Resepsionis";
 
       const quickBar = document.getElementById("mobileQuickBar");
@@ -1983,7 +1986,6 @@
         }
       }
 
-      // Validasi tanggal check-in tidak boleh mundur (harus >= hari ini)
       if (!checkIn || checkIn < today) {
         alert(`Tanggal check-in (${checkIn || "-"}) tidak boleh mundur sebelum hari ini (${today}). Pilih hari ini atau tanggal ke depan.`);
         return;
@@ -2011,7 +2013,6 @@
 
       const sisaTagihan = Math.max(0, totalTagihan - Math.min(paidAmount, totalTagihan));
 
-      // Validasi check-out hanya boleh jika sudah lunas
       if (stayStatus === "Selesai (Check-Out)" && (paymentStatus !== "Lunas" || sisaTagihan > 0)) {
         alert(
           `Status Selesai (Check-Out) hanya dapat dipilih jika pembayaran sudah Lunas (Sisa tagihan saat ini: ${formatRupiah(sisaTagihan)}).`
