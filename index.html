@@ -992,7 +992,8 @@
     <!-- Form CRUD Admin (Create & Update saja, tanpa Delete data satuan) -->
     <section class="card hidden" id="adminSection" aria-label="Form Admin CRUD">
       <div class="card-header">
-        <h2 class="card-title" id="formHeading">Tambah Reservasi Baru</h2>
+        <h2 class="card-title" id="formHeading">Tambah Reservasi Baru (Create)</h2>
+        <span class="admin-badge">ADMIN • CREATE & UPDATE ONLY</span>
       </div>
 
       <form class="crud-form" id="reservationForm">
@@ -1264,7 +1265,7 @@
   </div>
 
   <footer>
-    <strong>CJ Tech</strong> — Software Development • Sistem Manajemen Reservasi Hotel Responsif
+    <strong>CJ Tech</strong> — Software Development • Sistem Manajemen Reservasi Hotel Responsif (Tablet & Mobile)
   </footer>
 
   <script>
@@ -1623,7 +1624,7 @@
       if (pageItems.length === 0) {
         const emptyMsg =
           reservations.length === 0
-            ? "Belum ada data reservasi."
+            ? "Belum ada data reservasi. Gunakan menu Panel Admin (CRUD) untuk menambah data."
             : "Tidak ada data reservasi yang cocok dengan filter.";
 
         tbody.innerHTML = `<tr><td colspan="${colSpanCount}" style="text-align:center; padding:24px; color:#6e5046;">${emptyMsg}</td></tr>`;
@@ -1900,7 +1901,7 @@
       document.getElementById("tabAdmin").classList.toggle("active", admin);
       document.getElementById("adminSection").classList.toggle("hidden", !admin);
       document.getElementById("modeIndicator").textContent = admin
-        ? 
+        ? "Mode Admin (Create & Update)"
         : "Mode Tamu / Resepsionis";
 
       const quickBar = document.getElementById("mobileQuickBar");
