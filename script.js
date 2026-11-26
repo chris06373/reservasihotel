@@ -12,10 +12,6 @@ let isAdminMode = false;
 let currentPage = 1;
 let pageSize = 5;
 
-// Menyimpan sisa tagihan awal saat mode edit agar nominal bayar wajib tepat sama dengan sisa yang belum dibayar
-let editLockedRemainingBalance = null;
-let printCleanupTimer = null;
-
 function getTodayISO() {
   const now = new Date();
   const year = now.getFullYear();
@@ -24,71 +20,23 @@ function getTodayISO() {
   return `${year}-${month}-${day}`;
 }
 
-function getOriginalCheckInMin(editId) {
-  const today = getTodayISO();
-  if (!editId) return today;
-  const existing = reservations.find((r) => r.id === editId);
-  if (!existing || !existing.checkIn) return today;
-  // Saat edit: tidak boleh mundur dari tanggal awal maupun dari hari ini; boleh maju
-  return existing.checkIn > today ? existing.checkIn : today;
-}
-
 function applyDateConstraints() {
   const today = getTodayISO();
-  const editId = document.getElementById("editId").value;
   const checkInEl = document.getElementById("checkIn");
   const checkOutEl = document.getElementById("checkOut");
   const hintEl = document.getElementById("todayHint");
-  const minCheckIn = getOriginalCheckInMin(editId);
 
-  // Hapus batas max agar tanggal check-in boleh maju
+  checkInEl.min = today;
   checkInEl.removeAttribute("max");
-  checkInEl.min = minCheckIn;
-
-  // Jika input baru dan checkIn masih kosong, set default ke hari ini
-  if (!editId && !checkInEl.value) {
-    checkInEl.value = today;
-  }
-
-  if (checkInEl.value && checkInEl.value < minCheckIn) {
-    checkInEl.value = minCheckIn;
-  }
 
   if (hintEl) {
-    hintEl.textContent = editId
-      ? `Minimal ${minCheckIn} (tidak boleh mundur, boleh maju).`
-      : `Minimal hari ini (${today}) dan boleh maju.`;
+    hintEl.textContent = `Minimal hari ini (${today}) atau tanggal ke depan (tidak bisa mundur).`;
   }
 
   if (checkInEl.value) {
     checkOutEl.min = checkInEl.value;
-    if (!checkOutEl.value || checkOutEl.value < checkInEl.value) {
-      checkOutEl.value = checkInEl.value;
-    }
   } else {
-    checkOutEl.min = minCheckIn;
-  }
-}
-
-function applyEditPaymentLock() {
-  const editId = document.getElementById("editId").value;
-  const paidInput = document.getElementById("paidAmount");
-  const payStatusEl = document.getElementById("paymentStatus");
-
-  if (editId && editLockedRemainingBalance !== null) {
-    paidInput.value = editLockedRemainingBalance;
-    paidInput.min = editLockedRemainingBalance;
-    paidInput.max = editLockedRemainingBalance;
-    paidInput.readOnly = true;
-    paidInput.title = `Saat edit, nominal bayar dikunci tepat sebesar sisa tagihan: ${formatRupiah(editLockedRemainingBalance)}`;
-    if (editLockedRemainingBalance === 0) {
-      payStatusEl.value = "Lunas";
-    }
-  } else {
-    paidInput.readOnly = false;
-    paidInput.min = 0;
-    paidInput.removeAttribute("max");
-    paidInput.title = "";
+    checkOutEl.min = today;
   }
 }
 
@@ -140,12 +88,6 @@ function getBillingInfo(item) {
   return { nights, rate, total, paid, balance };
 }
 
-function canCheckOut(item) {
-  if (!item) return false;
-  const { balance } = getBillingInfo(item);
-  return item.paymentStatus === "Lunas" && balance === 0;
-}
-
 function formatRupiah(amount) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -163,30 +105,47 @@ function isCheckedOut(item) {
   return item.stayStatus === "Selesai (Check-Out)";
 }
 
+function canCheckOut(item) {
+  const { balance } = getBillingInfo(item);
+  return item.paymentStatus === "Lunas" && balance === 0;
+}
+
+/* Menandai reservasi yang memang sudah di-booking (belum check-out & memiliki data reservasi valid) */
+function isBookedReservation(r) {
+  if (!r || !r.id || !r.guestName || !r.roomType || !r.checkIn || !r.checkOut) return false;
+  if (r.stayStatus === "Selesai (Check-Out)") return false;
+  return true;
+}
+
+/* Deteksi Bentrok Tanggal Kamar: hanya terjadi jika sudah ada reservasi yang di-booking pada kamar & rentang tanggal yang sama */
 function checkRoomConflict(roomType, checkIn, checkOut, ignoreId = "") {
+  if (!Array.isArray(reservations) || reservations.length === 0) return null;
   if (!roomType || !checkIn || !checkOut || checkOut < checkIn) return null;
+
   const newStart = new Date(checkIn + "T00:00:00").getTime();
   const newEndDay = new Date(checkOut + "T00:00:00").getTime();
   const newEnd = newEndDay === newStart ? newStart + 86400000 : newEndDay;
 
   return reservations.find((r) => {
-    if (r.id === ignoreId) return false;
+    if (!isBookedReservation(r)) return false;
+    if (ignoreId && r.id === ignoreId) return false;
     if (r.roomType !== roomType) return false;
-    if (r.stayStatus === "Selesai (Check-Out)") return false;
+
     const exStart = new Date(r.checkIn + "T00:00:00").getTime();
     const exEndDay = new Date(r.checkOut + "T00:00:00").getTime();
     const exEnd = exEndDay === exStart ? exStart + 86400000 : exEndDay;
+
     return newStart < exEnd && newEnd > exStart;
   }) || null;
 }
 
 function updateAvailabilityBanner() {
   applyDateConstraints();
+  const today = getTodayISO();
   const roomType = document.getElementById("roomType").value;
   const checkIn = document.getElementById("checkIn").value;
   const checkOut = document.getElementById("checkOut").value;
   const editId = document.getElementById("editId").value;
-  const minCheckIn = getOriginalCheckInMin(editId);
 
   const banner = document.getElementById("availabilityBanner");
   const textEl = document.getElementById("availabilityText");
@@ -196,15 +155,15 @@ function updateAvailabilityBanner() {
 
   if (!checkIn || !checkOut) {
     banner.classList.add("availability-neutral");
-    textEl.textContent = `Pilih tanggal check-in (min. ${minCheckIn}, boleh maju) dan check-out (sama dengan check-in atau maju).`;
+    textEl.textContent = `Pilih tanggal check-in (minimal ${today}) dan check-out untuk mengecek ketersediaan kamar.`;
     tagEl.className = "badge badge-DP";
     tagEl.textContent = "Menunggu Tanggal";
     return;
   }
 
-  if (checkIn < minCheckIn) {
+  if (checkIn < today) {
     banner.classList.add("availability-conflict");
-    textEl.textContent = `Tanggal check-in (${checkIn}) tidak boleh mundur dari ${minCheckIn}.`;
+    textEl.textContent = `Tanggal check-in (${checkIn}) tidak boleh mundur sebelum hari ini (${today}).`;
     tagEl.className = "badge badge-Belum\\ Bayar";
     tagEl.textContent = "Tanggal Mundur";
     return;
@@ -212,7 +171,7 @@ function updateAvailabilityBanner() {
 
   if (checkOut < checkIn) {
     banner.classList.add("availability-conflict");
-    textEl.textContent = "Tanggal Check-Out harus sama dengan tanggal Check-In atau maju.";
+    textEl.textContent = "Tanggal Check-Out tidak boleh lebih awal dari tanggal Check-In.";
     tagEl.className = "badge badge-Belum\\ Bayar";
     tagEl.textContent = "Tanggal Tidak Valid";
     return;
@@ -221,24 +180,18 @@ function updateAvailabilityBanner() {
   const conflict = checkRoomConflict(roomType, checkIn, checkOut, editId);
   if (conflict) {
     banner.classList.add("availability-conflict");
-    textEl.textContent = `Bentrok dengan ${conflict.id} (${conflict.guestName}, ${conflict.checkIn} s/d ${conflict.checkOut}).`;
+    textEl.textContent = `Bentrok dengan booking ${conflict.id} (${conflict.guestName}, ${conflict.checkIn} s/d ${conflict.checkOut}).`;
     tagEl.className = "badge badge-Belum\\ Bayar";
     tagEl.textContent = "Kamar Bentrok";
   } else {
     banner.classList.add("availability-ok");
-    textEl.textContent = `${roomType} tersedia untuk periode ${checkIn} s/d ${checkOut}.`;
+    textEl.textContent = `${roomType} tersedia (belum ada yang booking) untuk periode ${checkIn} s/d ${checkOut}.`;
     tagEl.className = "badge badge-Lunas";
     tagEl.textContent = "Tersedia";
   }
 }
 
-function handleScheduleChange() {
-  updateAvailabilityBanner();
-  syncBillingPreview();
-}
-
 function syncBillingPreview() {
-  const editId = document.getElementById("editId").value;
   const roomType = document.getElementById("roomType").value;
   const checkIn = document.getElementById("checkIn").value;
   const checkOut = document.getElementById("checkOut").value;
@@ -249,16 +202,12 @@ function syncBillingPreview() {
   const rate = roomRates[roomType] || 650000;
   const total = rate * nights;
 
-  if (editId && editLockedRemainingBalance !== null) {
-    paidInput.value = editLockedRemainingBalance;
-    paidInput.readOnly = true;
-  } else {
-    paidInput.readOnly = false;
-    if (paymentStatus === "Lunas" && Number(paidInput.value || 0) === 0) {
-      paidInput.value = total;
-    } else if (paymentStatus === "Belum Bayar") {
-      paidInput.value = 0;
-    }
+  if (paymentStatus === "Lunas") {
+    paidInput.value = total;
+  } else if (paymentStatus === "Belum Bayar") {
+    paidInput.value = 0;
+  } else if (paymentStatus === "DP" && Number(paidInput.value || 0) >= total) {
+    paidInput.value = Math.max(0, Math.floor(total * 0.5));
   }
 
   const paid = Math.max(0, Math.min(Number(paidInput.value || 0), total));
@@ -338,12 +287,12 @@ function renderPagination(totalItems) {
   pagesEl.innerHTML = buttonsHtml;
 }
 
-function goToPage(page) {
+window.goToPage = function (page) {
   currentPage = page;
   renderList();
-}
+};
 
-function quickCheckIn(id) {
+window.quickCheckIn = function (id) {
   const target = reservations.find((r) => r.id === id);
   if (!target) return;
   if (isFutureCheckIn(target.checkIn)) {
@@ -356,15 +305,16 @@ function quickCheckIn(id) {
   saveReservations();
   renderStats();
   renderList();
-}
+  updateAvailabilityBanner();
+};
 
-function quickCheckOut(id) {
+window.quickCheckOut = function (id) {
   const target = reservations.find((r) => r.id === id);
   if (!target) return;
   if (!canCheckOut(target)) {
     const { balance } = getBillingInfo(target);
     alert(
-      `Tidak bisa Check-Out karena pembayaran masih ${target.paymentStatus} (Sisa tagihan: ${formatRupiah(balance)}). Harap lunasi pembayaran terlebih dahulu.`
+      `Check-Out ditolak: Reservasi ${target.id} belum Lunas (Sisa tagihan: ${formatRupiah(balance)}). Lunasi pembayaran terlebih dahulu.`
     );
     return;
   }
@@ -374,9 +324,10 @@ function quickCheckOut(id) {
   saveReservations();
   renderStats();
   renderList();
-}
+  updateAvailabilityBanner();
+};
 
-function quickMarkPaid(id) {
+window.quickMarkPaid = function (id) {
   const target = reservations.find((r) => r.id === id);
   if (!target || isCheckedOut(target)) return;
   reservations = reservations.map((item) => {
@@ -387,7 +338,7 @@ function quickMarkPaid(id) {
   saveReservations();
   renderStats();
   renderList();
-}
+};
 
 function renderList() {
   const filtered = getFilteredData();
@@ -423,13 +374,13 @@ function renderList() {
       const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
       const checkedOut = isCheckedOut(item);
       const futureCheckIn = isFutureCheckIn(item.checkIn);
-      const checkoutAllowed = canCheckOut(item);
+      const paidEnoughForCheckout = canCheckOut(item);
 
       let stayActionBtn = "";
       if (item.stayStatus === "Aktif Menginap") {
-        stayActionBtn = `<button type="button" class="btn btn-secondary btn-sm ${checkoutAllowed ? "" : "is-disabled"}" ${checkoutAllowed ? "" : 'disabled title="Pembayaran harus Lunas untuk Check-Out"'} onclick="quickCheckOut('${item.id}')">${checkoutAllowed ? "Check-Out" : "Belum Lunas"}</button>`;
+        stayActionBtn = `<button type="button" class="btn btn-secondary btn-sm ${paidEnoughForCheckout ? "" : "is-disabled"}" ${paidEnoughForCheckout ? "" : 'disabled title="Hanya bisa Check-Out jika pembayaran sudah Lunas"'} onclick="quickCheckOut('${item.id}')">${paidEnoughForCheckout ? "Check-Out" : "Belum Lunas"}</button>`;
       } else if (!checkedOut) {
-        stayActionBtn = `<button type="button" class="btn btn-secondary btn-sm ${futureCheckIn ? "is-disabled" : ""}" ${futureCheckIn ? 'disabled title="Check-in belum tersedia karena jadwal masih lama"' : ""} onclick="quickCheckIn('${item.id}')">Check-In</button>`;
+        stayActionBtn = `<button type="button" class="btn btn-secondary btn-sm ${futureCheckIn ? "is-disabled" : ""}" ${futureCheckIn ? 'disabled title="Check-in belum tersedia karena jadwal masih di masa depan"' : ""} onclick="quickCheckIn('${item.id}')">Check-In</button>`;
       }
 
       return `
@@ -474,11 +425,11 @@ function renderList() {
       const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
       const checkedOut = isCheckedOut(item);
       const futureCheckIn = isFutureCheckIn(item.checkIn);
-      const checkoutAllowed = canCheckOut(item);
+      const paidEnoughForCheckout = canCheckOut(item);
 
       let mobileStayBtn = "";
       if (item.stayStatus === "Aktif Menginap") {
-        mobileStayBtn = `<button type="button" class="btn btn-secondary btn-sm ${checkoutAllowed ? "" : "is-disabled"}" style="flex:1;" ${checkoutAllowed ? "" : "disabled"} onclick="quickCheckOut('${item.id}')">${checkoutAllowed ? "Tandai Check-Out" : "Wajib Lunas utk Check-Out"}</button>`;
+        mobileStayBtn = `<button type="button" class="btn btn-secondary btn-sm ${paidEnoughForCheckout ? "" : "is-disabled"}" style="flex:1;" ${paidEnoughForCheckout ? "" : "disabled"} onclick="quickCheckOut('${item.id}')">${paidEnoughForCheckout ? "Tandai Check-Out" : "Lunasi Dulu u/ Check-Out"}</button>`;
       } else if (!checkedOut) {
         mobileStayBtn = `<button type="button" class="btn btn-secondary btn-sm ${futureCheckIn ? "is-disabled" : ""}" style="flex:1;" ${futureCheckIn ? "disabled" : ""} onclick="quickCheckIn('${item.id}')">${futureCheckIn ? "Check-In Belum Dibuka" : "Tandai Check-In"}</button>`;
       }
@@ -611,13 +562,15 @@ function exportExcelHistory() {
   URL.revokeObjectURL(url);
 }
 
-function cleanupPrintState() {
-  if (printCleanupTimer) {
-    clearTimeout(printCleanupTimer);
-    printCleanupTimer = null;
-  }
-  document.body.classList.remove("printing-invoice");
-  document.body.classList.remove("printing-report");
+function fitSingleSheetPrint(targetSelector, baseScale = 0.92) {
+  const el = document.querySelector(targetSelector);
+  if (!el) return;
+  const maxPrintableHeightPx = 1020;
+  const rect = el.getBoundingClientRect();
+  const currentHeight = el.scrollHeight || rect.height || 1000;
+  const ratio = maxPrintableHeightPx / currentHeight;
+  const computedScale = Math.max(0.45, Math.min(baseScale, Number(ratio.toFixed(3))));
+  document.documentElement.style.setProperty("--print-scale", String(computedScale));
 }
 
 function exportPdfHistory() {
@@ -626,18 +579,18 @@ function exportPdfHistory() {
     alert("Tidak ada data histori untuk diunduh ke PDF.");
     return;
   }
-  cleanupPrintState();
+  fitSingleSheetPrint(".print-report-area", 0.92);
   document.body.classList.add("printing-report");
-  window.onafterprint = cleanupPrintState;
   window.print();
-  printCleanupTimer = setTimeout(cleanupPrintState, 1000);
+  setTimeout(() => {
+    document.body.classList.remove("printing-report");
+    document.documentElement.style.removeProperty("--print-scale");
+  }, 500);
 }
 
-function openInvoice(id) {
+window.openInvoice = function (id) {
   const item = reservations.find((r) => r.id === id);
   if (!item) return;
-
-  cleanupPrintState();
 
   const { nights, rate, total, paid, balance } = getBillingInfo(item);
   const badgeClass = `badge-${item.paymentStatus.replace(/\s+/g, "\\ ")}`;
@@ -669,33 +622,10 @@ function openInvoice(id) {
   document.getElementById("invRemainingBalance").textContent = formatRupiah(balance);
 
   document.getElementById("invoiceModal").classList.remove("hidden");
-}
+};
 
 function closeInvoiceModal() {
-  cleanupPrintState();
-  const modal = document.getElementById("invoiceModal");
-  if (modal) {
-    modal.classList.add("hidden");
-  }
-}
-
-function handleBackdropClick(event) {
-  if (event && event.target && event.target.id === "invoiceModal") {
-    closeInvoiceModal();
-  }
-}
-
-function printInvoice() {
-  const modal = document.getElementById("invoiceModal");
-  if (!modal || modal.classList.contains("hidden")) {
-    alert("Buka invoice terlebih dahulu sebelum mencetak.");
-    return;
-  }
-  cleanupPrintState();
-  document.body.classList.add("printing-invoice");
-  window.onafterprint = cleanupPrintState;
-  window.print();
-  printCleanupTimer = setTimeout(cleanupPrintState, 1000);
+  document.getElementById("invoiceModal").classList.add("hidden");
 }
 
 function setMode(admin) {
@@ -715,26 +645,26 @@ function setMode(admin) {
     resetForm();
   } else {
     updateAvailabilityBanner();
-    applyEditPaymentLock();
     syncBillingPreview();
   }
   renderList();
 }
 
 function resetForm() {
-  editLockedRemainingBalance = null;
   document.getElementById("editId").value = "";
   document.getElementById("reservationForm").reset();
+  document.getElementById("checkIn").value = getTodayISO();
+  document.getElementById("checkOut").value = getTodayISO();
   document.getElementById("paidAmount").value = 0;
   document.getElementById("formHeading").textContent = "Tambah Reservasi Baru (Create)";
   document.getElementById("submitBtn").textContent = "Simpan Reservasi";
   document.getElementById("cancelEditBtn").classList.add("hidden");
-  applyEditPaymentLock();
+  applyDateConstraints();
   updateAvailabilityBanner();
   syncBillingPreview();
 }
 
-function startEdit(id) {
+window.startEdit = function (id) {
   const target = reservations.find((r) => r.id === id);
   if (!target) return;
 
@@ -743,31 +673,28 @@ function startEdit(id) {
     return;
   }
 
-  const { balance } = getBillingInfo(target);
-  // Nominal dibayar saat edit hanya boleh tepat sebesar sisa tagihan yang belum dibayar
-  editLockedRemainingBalance = balance;
-
+  const { paid } = getBillingInfo(target);
   setMode(true);
   document.getElementById("editId").value = target.id;
   document.getElementById("guestName").value = target.guestName;
   document.getElementById("roomType").value = target.roomType;
   document.getElementById("checkIn").value = target.checkIn;
   document.getElementById("checkOut").value = target.checkOut;
-  document.getElementById("paymentStatus").value = balance === 0 ? "Lunas" : target.paymentStatus;
-  document.getElementById("paidAmount").value = balance;
+  document.getElementById("paymentStatus").value = target.paymentStatus;
+  document.getElementById("paidAmount").value = paid;
   document.getElementById("stayStatus").value = target.stayStatus;
   document.getElementById("paymentNote").value = target.paymentNote || "";
 
   document.getElementById("formHeading").textContent = `Edit Reservasi ${target.id} (Update)`;
   document.getElementById("submitBtn").textContent = "Perbarui Data";
   document.getElementById("cancelEditBtn").classList.remove("hidden");
-  applyEditPaymentLock();
+  applyDateConstraints();
   updateAvailabilityBanner();
   syncBillingPreview();
   document.getElementById("adminSection").scrollIntoView({ behavior: "smooth" });
-}
+};
 
-function submitReservation(e) {
+document.getElementById("reservationForm").addEventListener("submit", (e) => {
   e.preventDefault();
   const today = getTodayISO();
   const editId = document.getElementById("editId").value;
@@ -780,6 +707,11 @@ function submitReservation(e) {
   const stayStatus = document.getElementById("stayStatus").value;
   const paymentNote = document.getElementById("paymentNote").value.trim();
 
+  if (!guestName) {
+    alert("Nama tamu wajib diisi.");
+    return;
+  }
+
   if (editId) {
     const existing = reservations.find((r) => r.id === editId);
     if (existing && isCheckedOut(existing)) {
@@ -787,47 +719,46 @@ function submitReservation(e) {
       resetForm();
       return;
     }
-
-    const expectedPaid = editLockedRemainingBalance !== null ? editLockedRemainingBalance : getBillingInfo(existing).balance;
-    if (paidAmount !== expectedPaid) {
-      alert(`Saat edit, nominal yang dibayar harus tepat sebesar sisa tagihan yang belum dibayar (${formatRupiah(expectedPaid)}), tidak boleh kurang atau lebih.`);
-      paidAmount = expectedPaid;
-      document.getElementById("paidAmount").value = expectedPaid;
-      syncBillingPreview();
-      return;
-    }
   }
 
-  const minCheckIn = getOriginalCheckInMin(editId);
-  if (!checkIn || checkIn < minCheckIn) {
+  if (!checkIn || checkIn < today) {
+    alert(`Tanggal check-in (${checkIn || "-"}) tidak boleh mundur sebelum hari ini (${today}). Pilih hari ini atau tanggal ke depan.`);
+    return;
+  }
+
+  if (checkOut < checkIn) {
+    alert("Tanggal Check-Out tidak boleh lebih awal dari tanggal Check-In.");
+    return;
+  }
+
+  if (stayStatus === "Aktif Menginap" && checkIn > today) {
+    alert("Status Aktif Menginap tidak dapat dipilih untuk tanggal check-in di masa depan.");
+    return;
+  }
+
+  const nights = calculateNights(checkIn, checkOut);
+  const rate = roomRates[roomType] || 650000;
+  const totalTagihan = rate * nights;
+
+  if (paymentStatus === "Lunas") {
+    paidAmount = totalTagihan;
+  } else if (paymentStatus === "Belum Bayar") {
+    paidAmount = 0;
+  }
+
+  const sisaTagihan = Math.max(0, totalTagihan - Math.min(paidAmount, totalTagihan));
+
+  if (stayStatus === "Selesai (Check-Out)" && (paymentStatus !== "Lunas" || sisaTagihan > 0)) {
     alert(
-      editId
-        ? `Tanggal check-in (${checkIn || "-"}) tidak boleh mundur dari ${minCheckIn} (boleh maju).`
-        : `Tanggal check-in (${checkIn || "-"}) minimal hari ini (${today}) dan tidak boleh mundur (boleh maju).`
+      `Status Selesai (Check-Out) hanya dapat dipilih jika pembayaran sudah Lunas (Sisa tagihan saat ini: ${formatRupiah(sisaTagihan)}).`
     );
     return;
-  }
-
-  if (!checkOut || checkOut < checkIn) {
-    alert("Tanggal Check-Out harus sama dengan tanggal Check-In atau maju.");
-    return;
-  }
-
-  if (stayStatus === "Selesai (Check-Out)") {
-    const tempItem = { checkIn, checkOut, roomType, paymentStatus, paidAmount };
-    if (!canCheckOut(tempItem)) {
-      const { balance } = getBillingInfo(tempItem);
-      alert(
-        `Status Selesai (Check-Out) tidak dapat disimpan karena pembayaran masih ${paymentStatus} (Sisa tagihan: ${formatRupiah(balance)}). Harap lunasi terlebih dahulu.`
-      );
-      return;
-    }
   }
 
   const conflict = checkRoomConflict(roomType, checkIn, checkOut, editId);
   if (conflict) {
     const proceed = confirm(
-      `Peringatan: ${roomType} bentrok dengan reservasi ${conflict.id} (${conflict.guestName}, ${conflict.checkIn} s/d ${conflict.checkOut}). Tetap simpan data?`
+      `Peringatan: ${roomType} sudah di-booking oleh ${conflict.guestName} (${conflict.id}, ${conflict.checkIn} s/d ${conflict.checkOut}). Tetap simpan data?`
     );
     if (!proceed) return;
   }
@@ -858,25 +789,84 @@ function submitReservation(e) {
   renderStats();
   renderList();
   resetForm();
-}
+});
 
-function handleFilterChange() {
+["roomType", "checkIn", "checkOut"].forEach((id) => {
+  document.getElementById(id).addEventListener("change", () => {
+    if (id === "checkIn") {
+      const checkInEl = document.getElementById("checkIn");
+      const checkOutEl = document.getElementById("checkOut");
+      if (checkInEl.value) {
+        checkOutEl.min = checkInEl.value;
+        if (checkOutEl.value && checkOutEl.value < checkInEl.value) {
+          checkOutEl.value = checkInEl.value;
+        }
+      }
+    }
+    updateAvailabilityBanner();
+    syncBillingPreview();
+  });
+});
+
+["paymentStatus", "paidAmount"].forEach((id) => {
+  document.getElementById(id).addEventListener("input", syncBillingPreview);
+  document.getElementById(id).addEventListener("change", syncBillingPreview);
+});
+
+document.getElementById("quickFocusFormBtn").addEventListener("click", () => {
+  document.getElementById("adminSection").scrollIntoView({ behavior: "smooth" });
+});
+
+document.getElementById("quickScrollListBtn").addEventListener("click", () => {
+  document.getElementById("listSection").scrollIntoView({ behavior: "smooth" });
+});
+
+document.getElementById("cancelEditBtn").addEventListener("click", resetForm);
+document.getElementById("tabGuest").addEventListener("click", () => setMode(false));
+document.getElementById("tabAdmin").addEventListener("click", () => setMode(true));
+document.getElementById("clearStorageBtn").addEventListener("click", clearLocalStorageData);
+document.getElementById("exportExcelBtn").addEventListener("click", exportExcelHistory);
+document.getElementById("exportPdfBtn").addEventListener("click", exportPdfHistory);
+document.getElementById("closeInvoiceBtn").addEventListener("click", closeInvoiceModal);
+
+document.getElementById("printInvoiceBtn").addEventListener("click", () => {
+  fitSingleSheetPrint(".modal-card", 0.94);
+  document.body.classList.add("printing-invoice");
+  window.print();
+  setTimeout(() => {
+    document.body.classList.remove("printing-invoice");
+    document.documentElement.style.removeProperty("--print-scale");
+  }, 500);
+});
+
+document.getElementById("invoiceModal").addEventListener("click", (e) => {
+  if (e.target.id === "invoiceModal") closeInvoiceModal();
+});
+
+document.getElementById("searchInput").addEventListener("input", () => {
   currentPage = 1;
   renderList();
-}
+});
 
-function handlePageSizeChange(value) {
-  pageSize = Number(value) || 5;
+document.getElementById("filterPayment").addEventListener("change", () => {
   currentPage = 1;
   renderList();
-}
+});
 
-function scrollToSection(sectionId) {
-  document.getElementById(sectionId).scrollIntoView({ behavior: "smooth" });
-}
+document.getElementById("filterStay").addEventListener("change", () => {
+  currentPage = 1;
+  renderList();
+});
 
+document.getElementById("pageSizeSelect").addEventListener("change", (e) => {
+  pageSize = Number(e.target.value) || 5;
+  currentPage = 1;
+  renderList();
+});
+
+document.getElementById("checkIn").value = getTodayISO();
+document.getElementById("checkOut").value = getTodayISO();
 applyDateConstraints();
-applyEditPaymentLock();
 updateAvailabilityBanner();
 syncBillingPreview();
 renderStats();
