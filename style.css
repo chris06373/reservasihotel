@@ -768,43 +768,55 @@ footer {
   background: #fff;
 }
 
-/* Modern Print / PDF Styling */
+/* 1-Sheet Print / PDF Styling */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 12mm;
+    margin: 8mm;
+  }
+
+  html, body {
+    width: 100%;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    overflow: hidden !important;
   }
 
   body * {
     visibility: hidden;
   }
 
+  /* Mode Print Invoice 1 Lembar */
   body.printing-invoice #invoiceModal,
   body.printing-invoice #invoiceModal * {
     visibility: visible;
   }
 
   body.printing-invoice #invoiceModal {
-    position: static;
+    position: fixed !important;
+    inset: 0 !important;
     background: #ffffff !important;
     backdrop-filter: none !important;
     padding: 0 !important;
+    display: block !important;
+    overflow: hidden !important;
   }
 
   body.printing-invoice .modal-card {
     box-shadow: none !important;
     border: 1px solid #e6cfc7 !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     max-width: 100% !important;
+    width: 100% !important;
     max-height: none !important;
     overflow: visible !important;
+    transform: scale(var(--print-scale, 0.92));
+    transform-origin: top center;
   }
 
-  body.printing-invoice .invoice-modern-banner {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
+  body.printing-invoice .invoice-modern-banner,
   body.printing-invoice .invoice-meta-strip,
   body.printing-invoice .invoice-summary-box,
   body.printing-invoice .badge {
@@ -816,16 +828,46 @@ footer {
     display: none !important;
   }
 
+  /* Mode Print Laporan Histori 1 Lembar */
   body.printing-report .print-report-area,
   body.printing-report .print-report-area * {
     visibility: visible;
   }
 
   body.printing-report .print-report-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    border: 1px solid #e6cfc7 !important;
+    transform: scale(var(--print-scale, 0.88));
+    transform-origin: top left;
+  }
+
+  body.printing-report .export-bar,
+  body.printing-report .toolbar,
+  body.printing-report .pagination-bar,
+  body.printing-report .admin-col,
+  body.printing-report .mobile-list,
+  body.printing-report .mobile-quick-bar {
+    display: none !important;
+  }
+
+  body.printing-report .table-wrap {
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  body.printing-report table {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  body.printing-report th,
+  body.printing-report td {
+    padding: 6px 8px !important;
+    font-size: 0.76rem !important;
   }
 }
 
