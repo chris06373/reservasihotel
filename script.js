@@ -359,7 +359,7 @@ function renderList() {
   if (pageItems.length === 0) {
     const emptyMsg =
       reservations.length === 0
-        ? "Belum ada data reservasi. Gunakan menu Panel Admin (CRUD) untuk menambah data."
+        ? "Belum ada data reservasi."
         : "Tidak ada data reservasi yang cocok dengan filter.";
 
     tbody.innerHTML = `<tr><td colspan="${colSpanCount}" style="text-align:center; padding:24px; color:#6e5046;">${emptyMsg}</td></tr>`;
