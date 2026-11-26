@@ -1431,6 +1431,18 @@
       return isValidExistingBooking(matched, ignoreId) ? matched : null;
     }
 
+    function setSubmitBlockedState(blocked, reasonText = "") {
+      const submitBtn = document.getElementById("submitBtn");
+      if (!submitBtn) return;
+      submitBtn.disabled = Boolean(blocked);
+      submitBtn.classList.toggle("is-disabled", Boolean(blocked));
+      if (blocked && reasonText) {
+        submitBtn.title = reasonText;
+      } else {
+        submitBtn.removeAttribute("title");
+      }
+    }
+
     function updateAvailabilityBanner() {
       applyDateConstraints();
       const today = getTodayISO();
@@ -1450,6 +1462,7 @@
         textEl.textContent = `Pilih tanggal check-in (minimal ${today}) dan check-out untuk mengecek ketersediaan kamar.`;
         tagEl.className = "badge badge-DP";
         tagEl.textContent = "Menunggu Tanggal";
+        setSubmitBlockedState(false);
         return;
       }
 
@@ -1458,6 +1471,7 @@
         textEl.textContent = `Tanggal check-in (${checkIn}) tidak boleh mundur sebelum hari ini (${today}).`;
         tagEl.className = "badge badge-Belum\\ Bayar";
         tagEl.textContent = "Tanggal Mundur";
+        setSubmitBlockedState(false);
         return;
       }
 
@@ -1466,28 +1480,33 @@
         textEl.textContent = "Tanggal Check-Out tidak boleh lebih awal dari tanggal Check-In.";
         tagEl.className = "badge badge-Belum\\ Bayar";
         tagEl.textContent = "Tanggal Tidak Valid";
+        setSubmitBlockedState(false);
         return;
       }
 
       if (!Array.isArray(reservations) || reservations.length === 0) {
         banner.classList.add("availability-ok");
-        textEl.textContent = `Belum ada booking tersimpan. ${roomType} tersedia untuk periode ${checkIn} s/d ${checkOut}.`;
+        textEl.textContent = `${roomType} tersedia untuk periode ${checkIn} s/d ${checkOut}.`;
         tagEl.className = "badge badge-Lunas";
         tagEl.textContent = "Tersedia";
+        setSubmitBlockedState(false);
         return;
       }
 
       const conflict = checkRoomConflict(roomType, checkIn, checkOut, editId);
       if (conflict && isValidExistingBooking(conflict, editId)) {
+        const msg = `Bentrok dengan ${conflict.id} (${conflict.guestName}, ${conflict.checkIn} s/d ${conflict.checkOut}). Kamar tidak bisa dipesan.`;
         banner.classList.add("availability-conflict");
-        textEl.textContent = `Bentrok dengan ${conflict.id} (${conflict.guestName}, ${conflict.checkIn} s/d ${conflict.checkOut}).`;
+        textEl.textContent = msg;
         tagEl.className = "badge badge-Belum\\ Bayar";
-        tagEl.textContent = "Kamar Bentrok";
+        tagEl.textContent = "Tidak Bisa Dipesan";
+        setSubmitBlockedState(true, msg);
       } else {
         banner.classList.add("availability-ok");
         textEl.textContent = `${roomType} tersedia untuk periode ${checkIn} s/d ${checkOut}.`;
         tagEl.className = "badge badge-Lunas";
         tagEl.textContent = "Tersedia";
+        setSubmitBlockedState(false);
       }
     }
 
@@ -2050,10 +2069,11 @@
 
       const conflict = checkRoomConflict(roomType, checkIn, checkOut, editId);
       if (conflict && isValidExistingBooking(conflict, editId)) {
-        const proceed = confirm(
-          `Peringatan: ${roomType} bentrok dengan reservasi ${conflict.id} (${conflict.guestName}, ${conflict.checkIn} s/d ${conflict.checkOut}). Tetap simpan data?`
+        updateAvailabilityBanner();
+        alert(
+          `Kamar tidak bisa dipesan: ${roomType} bentrok dengan reservasi ${conflict.id} (${conflict.guestName}, ${conflict.checkIn} s/d ${conflict.checkOut}).`
         );
-        if (!proceed) return;
+        return;
       }
 
       if (editId) {
